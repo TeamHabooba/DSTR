@@ -48,3 +48,15 @@ for version control and Kanban workflow.
 - Execution speed / time might be measured with standard `std::chrono` tools. No profiling toolchain required for now (might be changed according to the lecturer requirements).  
 - Memory usage might be measured with ?
 - Multithreading implementation is not required.
+
+### Style and Naming Conventions
+We are using the C++ coding conventions.
+The exact list of requirements is [here](./docs/code-style.md).
+
+### Documentation
+Documentation might be implemented in 2 ways:
+1. Create your own `.md` file in `docs` directory. No formatting required.
+2. Write comments on each entity: classes, methods, fields, constants.
+
+You can pick one or do both.  
+Check [this file](./docs/code-doc.md) to understand what exactly do you need to mention in documentation.
