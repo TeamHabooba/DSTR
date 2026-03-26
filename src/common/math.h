@@ -5,7 +5,9 @@
 #include <cmath>
 
 
-namespace accounting {
+namespace dstr {
+
+
 // Math
 // Add tests
 inline bool is_close_double(double a, double b, double rel_tol = 1e-6,
@@ -14,4 +16,6 @@ inline bool is_close_double(double a, double b, double rel_tol = 1e-6,
   double b_abs = std::abs(b);
   return std::abs(a - b) <= std::max(rel_tol * std::max(a_abs, b_abs), abs_tol);
 }
-} // namespace accounting
+
+
+} // namespace dstr

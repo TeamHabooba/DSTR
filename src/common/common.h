@@ -5,7 +5,7 @@
 
 // Defines
 // Conditional compilation flags
-#define ACCOUNTING_THREAD_SAFE_TIME
+#define DSTR_THREAD_SAFE_TIME
 #define USE_CUSTOM_DATE_TIME
 
 
@@ -17,7 +17,7 @@
 #include "nlohmann/json.hpp"
 #include "./math.h"             // <cmath>
 #include "./enums.h"            // "./aliases.h" <- {<optional>, <memory>, "./strings.h"}
-#include "./time.h"             // {<ctime>, <string>, <sstream>, <iomanip>, "./aliases.h" <- {<cstdint>, <optional>, <memory>, <chrono>}
+//#include "./time.h"             // {<ctime>, <string>, <sstream>, <iomanip>, "./aliases.h" <- {<cstdint>, <optional>, <memory>, <chrono>}
 
 #ifdef USE_CUSTOM_DATE_TIME
 #include "./date_time.h"
