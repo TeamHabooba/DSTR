@@ -1,3 +1,6 @@
+# Visual Studio Files
+.vs/*
+
 # Prerequisites
 *.d
 
@@ -33,6 +36,7 @@
 *.lib
 
 # Executables
+out/*
 *.exe
 *.out
 *.app
