@@ -95,7 +95,7 @@ namespace dstr {
     };
 
 
-    // void specialisation
+    // void specification
     template<>
     class Result<void> {
         Error error_;
