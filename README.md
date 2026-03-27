@@ -56,7 +56,7 @@ for version control and Kanban workflow.
 
 ### Style and Naming Conventions
 We are using the C++ coding conventions.
-The exact list of requirements is [here](./docs/code-style.md).
+The exact list of requirements is [here](./doc/code-style.md).
 
 ### Documentation
 Documentation might be implemented in 2 ways:
@@ -64,4 +64,4 @@ Documentation might be implemented in 2 ways:
 2. Write comments on each entity: classes, methods, fields, constants.
 
 You can pick one or do both.  
-Check [this file](./docs/code-doc.md) to understand what exactly do you need to mention in documentation.
+Check [this file](./doc/code-doc.md) to understand what exactly do you need to mention in documentation.
