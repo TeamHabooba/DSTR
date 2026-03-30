@@ -11,11 +11,16 @@ Group 32
 - [Q&A](#q--a)
 
 ## Team Members
-- ##### TP084561 --- Colin Subira Kwilabya
-- ##### TP081705 --- Kurapatkin Aliaksandr
-- ##### TP082557 --- Leon Frank Aminiel
-- ##### TP082459 --- Mohamed Abdifatah Ali
-- ##### TP069434 --- Omar AlaaEldin Elsayed Farrag
+- ##### TP084561
+Colin Subira Kwilabya  
+- ##### TP081705
+Kurapatkin Aliaksandr  
+- ##### TP082557  
+Leon Frank Aminiel
+- ##### TP082459
+Mohamed Abdifatah Ali
+- ##### TP069434  
+Omar AlaaEldin Elsayed Farrag
 
 ## Task Division
 
