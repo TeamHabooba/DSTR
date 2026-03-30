@@ -8,6 +8,7 @@ Group 32
 - [Assignment Question](#assignment-question)
 - [Requirements](#requirements)
 - [Guidelines for Team Members](#guidelines-for-team-members)
+- [Q A](#q-a)
 
 ## Team Members
 - TP084561 --- Colin Subira Kwilabya
@@ -66,3 +67,6 @@ Documentation might be implemented in 2 ways:
 
 You can pick one or do both.  
 Check [this file](./doc/code-doc.md) to understand what exactly do you need to mention in documentation.
+
+### Q & A
+Here would be stated all the unclear requirements and all other questions related to this assignment. Together with supervisor's answers.
