@@ -111,25 +111,25 @@ Check [this file](./doc/code-doc.md) to understand what exactly do you need to m
 ## Q & A
 Here would be stated all the unclear requirements and all other questions related to this assignment. Together with supervisor's answers.
 
-#### Question
+### Q1
 What C++ standard should we use? C++ 17?
 
 #### Answer
 --
 
-#### Question
+### Q2
 Is it allowed to use JSON files?
 
 #### Answer
 Yes, but only for this lecture (L3-ABA).
 
-#### Question
+### Q3
 What about the unit tests? Is it allowed or redundant? Does it count as creativity?
 
 #### Answer
 --
 
-#### Question
+### Q4
 How do we measure the memory usage for the data structures?
 Do we use profiling tools or just `sizeof()` operator?
 If someone is coding with Visual Studio Code, what profiling tools should they use?
@@ -137,14 +137,14 @@ If someone is coding with Visual Studio Code, what profiling tools should they u
 #### Answer
 --
 
-#### Question
+### Q5
 "Carpool" and "Car" are the same Mode Of Transport or different?
 "School Bus" and "Bus"?
 
 #### Answer
 --
 
-#### Question
+### Q6
 What is meant by "analysis operations" in assignment question?
 
 #### Answer
