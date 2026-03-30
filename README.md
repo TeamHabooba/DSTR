@@ -8,7 +8,7 @@ Group 32
 - [Assignment Question](#assignment-question)
 - [Requirements](#requirements)
 - [Guidelines for Team Members](#guidelines-for-team-members)
-- [Q A](#q-a)
+- [Q&A](#q--a)
 
 ## Team Members
 - TP084561 --- Colin Subira Kwilabya
