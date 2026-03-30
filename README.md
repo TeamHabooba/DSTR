@@ -54,7 +54,9 @@ webpage to learn about the different types of linked lists),
 - analysis API
 
 ### Assignees
-General functionality - 
+General functionality - [Alex](#tp081705)
+Array Implementation - [Leo](#tp082557) and [Moha](#TP082459)
+List Implementation - [Colin](#TP084561) and [Omar](#TP069434)
 
 
 ## Assignment Question
