@@ -19,6 +19,7 @@ Group 32
 ## Task Division
 
 ## Assignment Question
+All the parts of this project are created following the initial assignment question. The exact PDF-document may be opened with [this link](./doc/AssignmentT1.pdf) 
 
 ## Requirements
 
@@ -55,8 +56,8 @@ for version control and Kanban workflow.
 - Multithreading implementation is not required.
 
 ### Style and Naming Conventions
-We are using the C++ coding conventions.
-The exact list of requirements is [here](./doc/code-style.md).
+We are using the C++ Google coding style with some minor changes.
+The exact guidelines and coding style requirements can be found [here](./doc/code-style.md).
 
 ### Documentation
 Documentation might be implemented in 2 ways:
