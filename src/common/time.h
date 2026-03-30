@@ -464,4 +464,4 @@ namespace dstr {
             return from_system_clock(t_now);
         }
     };
-}
+} // namespace dstr

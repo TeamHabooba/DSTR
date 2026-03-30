@@ -43,7 +43,7 @@ set(SOURCES
 
   "${SRC_DIR}/headers.h"
   "${SRC_DIR}/Source.cpp"
-)
+ "src/common/resident.h")
 
 
 add_executable (DSTR ${SOURCES})

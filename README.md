@@ -96,3 +96,10 @@ If someone is coding with Visual Studio Code, what profiling tools should they u
 
 #### Answer
 --
+
+#### Question
+"Carpool" and "Car" are the same Mode Of Transport or different?
+"School Bus" and "Bus"?
+
+#### Answer
+--
