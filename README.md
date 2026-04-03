@@ -25,7 +25,7 @@ Group 32
 ## Task Division
 
 ### Explanation
-This assignment would be completed in subgroups.
+This assignment would be completed in subgroups. All the classes, functions and methods must be put into the `dstr::` namespace.
 1 (ONE) person completes the *general (common) part*, including:
 - making type aliases (sptr, i8, u32, etc.),
 - creating string literals/constants,
@@ -37,21 +37,21 @@ This assignment would be completed in subgroups.
 [this](https://medium.com/@simonyihunie/arrays-vs-vectors-in-modern-c-a-detailed-comparison-with-examples-b797fefff7f7) 
 or [this](https://stackoverflow.com/questions/6462985/c-stdvector-vs-array-in-the-real-world) 
 webpage to learn the difference between basic array, `std::array` and `std::vector`),
-- sort algorithms: bubble sort, insertion sort. More might be added later,
+- sort algorithms: bubble sort, insertion sort, quick sort. More might be added later,
 - search algorithms: linear (brute-force), binary, jump. More might be added later,
 - access API (application programming interface), including square brackets (`[]`) operator,
 - insert/delete API,
-- analysis API
+- analysis API: additional helper methods to compare time & memory used by different algorithms.
 
 2 (TWO) people implement the *list* part, that includes all of the following:
 - data structure implementation (with templates and *single*-linked nodes;
 refer to [this](https://www.geeksforgeeks.org/dsa/types-of-linked-list/)
 webpage to learn about the different types of linked lists),
-- sort algorithms: bubble sort, quick sort. More might be added later,
+- sort algorithms: bubble sort, insertion sort, quick sort. More might be added later,
 - search algorithms: linear (brute-force), binary, exponential. More might be added later,
 - access API (application programming interface), including square brackets (`[]`) operator,
 - insert/delete API,
-- analysis API
+- analysis API: additional helper methods to compare time & memory used by different algorithms.
 
 ### Assignees
 *General* functionality - [Alex](#tp081705)  
@@ -82,18 +82,17 @@ to give the references from this website.)
 > 6. Group Leader
 
 ### Toolchain/Framework
-- For this assignment Group 32 is using C++ 17 standard.  
+- For this assignment Group 32 is using C++ 20 standard.  
 - Target platform: Windows 10/11.  
 - Any IDE would be okay, yet Microsoft Visual Studio (Not Visual Studio Code) is recommended.
 You don't have to use Enterprise (or any paid) edition.
 Community Edition is enough for this assignment.  
 - CMake is used as a building system.  
 - Git + GitHub basic toolchain (without CI pipeline) would be used
-for version control and Kanban workflow.   
-- Unit tests may be implemented with Google Test.  
+for version control.   
 - No building speed requirements.  
-- Execution speed / time might be measured with standard `std::chrono` tools. No profiling toolchain required for now (might be changed according to the lecturer requirements).  
-- Memory usage might be measured with ?
+- Execution speed / time might be measured with standard `std::chrono` tools. No profiling toolchain required.  
+- Memory usage might be measured with `sizeof()` operator.
 - Multithreading implementation is not required.
 
 ### Style and Naming Conventions
@@ -115,19 +114,21 @@ Here would be stated all the unclear requirements and all other questions relate
 What C++ standard should we use? C++ 17?
 
 #### Answer
---
+There are no restrictions. So we will use C++ 20.
 
 ### Q2
 Is it allowed to use JSON files?
 
 #### Answer
-Yes, but only for this lecture (L3-ABA).
+Yes, but only for this lecture (L3-ABA). And JSON is not actually needed.
+Because according to assignment we only need to read from the existing CSV files.
+Without editing them or creating the new ones.
 
 ### Q3
 What about the unit tests? Is it allowed or redundant? Does it count as creativity?
 
 #### Answer
---
+It doesn't give additional marks and it isn't required.
 
 ### Q4
 How do we measure the memory usage for the data structures?
@@ -135,17 +136,19 @@ Do we use profiling tools or just `sizeof()` operator?
 If someone is coding with Visual Studio Code, what profiling tools should they use?
 
 #### Answer
---
+Only in-code measurements.
 
 ### Q5
 "Carpool" and "Car" are the same Mode Of Transport or different?
 "School Bus" and "Bus"?
 
 #### Answer
---
+Yes, each of the above is a separate Mode of Transport.
 
 ### Q6
 What is meant by "analysis operations" in assignment question?
 
 #### Answer
---
+All the time and space analysis operations with arrays/lists.
+E.g.: compare memory usage between two different sorting algorithms;
+comparing sorting speed for the same algorithm applied to list and array.
