@@ -11,16 +11,12 @@ Group 32
 - [Q&A](#q--a)
 
 ## Team Members
-- #### TP084561
-> Colin Subira Kwilabya  
 - #### TP081705
 > Kurapatkin Aliaksandr  
 - #### TP082557  
 > Leon Frank Aminiel
 - #### TP082459
 > Mohamed Abdifatah Ali
-- #### TP069434  
-> Omar AlaaEldin Elsayed Farrag
 
 ## Task Division
 
@@ -55,8 +51,8 @@ webpage to learn about the different types of linked lists),
 
 ### Assignees
 *General* functionality - [Alex](#tp081705)  
-*Array* Implementation - [Leo](#tp082557) and [Moha](#TP082459)  
-*List* Implementation - [Colin](#TP084561) and [Omar](#TP069434)  
+*Array* Implementation -  [Moha](#TP082459)  
+*List* Implementation - [Leo](#tp082557) 
 
 
 ## Assignment Question
