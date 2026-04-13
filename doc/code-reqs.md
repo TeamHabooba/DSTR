@@ -37,7 +37,7 @@ internal implementation must be the same as (or at least close to)
 
 Refer to
 [this](https://medium.com/@simonyihunie/arrays-vs-vectors-in-modern-c-a-detailed-comparison-with-examples-b797fefff7f7) 
-or [this](https://stackoverflow.com/questions/6462985/c-stdvector-vs-array-in-the-real-world
+or [this](https://stackoverflow.com/questions/6462985/c-stdvector-vs-array-in-the-real-world)
 webpage to learn the difference between basic array, `std::array` and `std::vector`).
 
 ### List
