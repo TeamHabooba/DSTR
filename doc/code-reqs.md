@@ -1,12 +1,14 @@
 # Project Requirements
-This file contains a proper explanation on what should be implemented.
+This file contains a proper explanation on what should be implemented and what are the coding rules.
+Unlike the [code-style.md](./code-style.md) file, that says *how* to format code, this file
+describes *what* should be in the source code.
 
 ## Functional
 ### General
 - Split your source code in `.h` (or `.hpp`, `.hxx`, `.h++`) and `.cpp` (or `.cxx`, `.c++`) files.
 First must be used for declarations only, second - for implementation.
 - Raw pointers usage prohibited. You *will* forget to `delete`.
-You have `sptr`, `wptr` and `uptr`, which are aliases for
+You have `sp`, `wp` and `up`, which are aliases for
 `std::shared_ptr`, `std::weak_ptr` and `std::unique_ptr` respectively.
 - Write all your code within the `dstr` namespace.
 - `using namespace std;` and any other `using namespace ...` are prohibited.

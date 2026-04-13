@@ -20,10 +20,13 @@ namespace dstr {
     
 // General aliases
 template <typename T>
-using uptr = std::unique_ptr<T>;
+using up = std::unique_ptr<T>;
 
 template <typename T>
-using sptr = std::shared_ptr<T>;
+using sp = std::shared_ptr<T>;
+
+template <typename T>
+using wp = std::weak_ptr<T>;
 
 using std::string;
 
@@ -32,7 +35,7 @@ using std::chrono::system_clock;
 
 using optional_tm = std::optional<std::tm>;
 
-using json = nlohmann::json;
+//using json = nlohmann::json;
 
 
 // Numeric aliases
