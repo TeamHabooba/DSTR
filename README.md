@@ -55,8 +55,8 @@ webpage to learn about the different types of linked lists),
 
 ### Assignees
 *General* functionality - [Alex](#tp081705)  
-*Array* Implementation -  [Moha](#tp082459) & [SAID](#tp076354)  
-*List* Implementation - [Leo](#tp082557) & [SALEH](#tp080562)  
+*Array* Implementation -  [Moha](#tp082459) & [Said](#tp076354)  
+*List* Implementation - [Leo](#tp082557) & [Saleh](#tp080562)  
 
 *No Task Assigned* -  *---*
 
