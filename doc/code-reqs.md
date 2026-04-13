@@ -25,12 +25,12 @@ If any error occured in those files, please contact responsible team member(s) A
 - Any collection types (`dstr::array`, `dstr::list`, etc.) must be templates.
 
 ### Array
-Basic data type: `dstr::array`
-`dstr::dynamic_array` must be implemeted as a single
+Basic data type: `dstr::array`  
+`dstr::array` must be implemeted as a single
 memory layout containing values of the same data type
 with dynamic memory allocation (smart pointers and RAII).  
 
-Experimental data type: `dstr::dynamic_array`
+Experimental data type: `dstr::dynamic_array`  
 An additional class `dstr::dynamic_array` must have
 internal implementation must be the same as (or at least close to)
 `std::vector`.
@@ -41,11 +41,11 @@ or [this](https://stackoverflow.com/questions/6462985/c-stdvector-vs-array-in-th
 webpage to learn the difference between basic array, `std::array` and `std::vector`).
 
 ### List
-Basic data type: `dstr::list`
+Basic data type: `dstr::list`  
 `dstr::list` must be a singly-linked list. As mentioned above,
 use smart pointers and RAII instead of raw pointers.
 
-Experimental data type: `dstr::double_list`
+Experimental data type: `dstr::double_list`  
 Implement `dstr::double_list` class based on double linked list
 structure. No raw pointers.
 
