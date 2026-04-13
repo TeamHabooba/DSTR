@@ -13,7 +13,6 @@ Refer to the project lead if you find anything unspecified. But please,
 - [Visibility and Access](#visibility-and-access)
 - [Type Aliases and Primitives](#type-aliases-and-primitives)
 - [Pointers and Memory Management](#pointers-and-memory-management)
-- [Concurrency](#concurrency)
 - [Error Handling](#error-handling)
 - [Miscellaneous](#miscellaneous)
 - [Quick Class Template](#quick-class-template)
@@ -53,7 +52,7 @@ Refer to the project lead if you find anything unspecified. But please,
 - **Type aliases**: short lowercase aliases — `i32`, `id_t`, `sptr<T>`.
 - Avoid Hungarian notation and prefixes like `m_name`, `_name`, `pValue`.
 
-Full breakdown:
+Full breakdown table:
 
 | Thing | Style | Example |
 |---|---|---|
@@ -262,10 +261,12 @@ Defined in `common/common.h`. Use them consistently across the codebase — neve
 
 | Alias | Meaning | Typical usage |
 |---|---|---|
-| `i32` | 32-bit signed integer (`int32_t`) | Counts, amounts, scores |
+| `i32` |  `int32_t` | 32-bit signed integer |
 | `id_t` | Unsigned entity ID | IDs for most entities |
 | `lid_t` | Large / long ID | IDs for entities with bigger ID space |
-| `sptr<T>` | `std::shared_ptr<T>` | Shared ownership between objects |
+| `sp<T>` | `std::shared_ptr<T>` | Shared ownership between objects |
+| `wp<T>` | `std::weak_ptr<T>` | Weak pointer to an object owned by `sp<T>` |
+| `up<T>` | `std::unique_ptr` | RAII-based pointer. Prefer this in most cases |
 | `string` | `std::string` | All text (via `using std::string`) |
 | `DateTime` | Wrapper over `struct tm` | Timestamps and dates |
 
@@ -296,30 +297,6 @@ void set_player(Player&& player);        // move
 
 ---
 
-### Concurrency
-- If a class instance can be accessed from multiple threads simultaneously, give it its own `std::mutex` field.
-- Acquire multiple mutexes at once safely using `std::lock()` to prevent deadlocks:
-```cpp
-std::mutex& mtx_a = obj_a->get_mutex();
-std::mutex& mtx_b = obj_b->get_mutex();
-
-std::lock(mtx_a, mtx_b);
-std::lock_guard<std::mutex> lock_a(mtx_a, std::adopt_lock);
-std::lock_guard<std::mutex> lock_b(mtx_b, std::adopt_lock);
-```
-- Never lock/unlock manually — always use RAII wrappers (`lock_guard`, `unique_lock`).
-- `std::mutex` is **non-copyable**. In copy constructors, always initialize a fresh mutex instead of copying from the source object:
-```cpp
-Player::Player(const Player& other)
-    : id_(other.id_),
-      name_(other.name_),
-      score_(other.score_),
-      mutex_{} {}   // fresh mutex — NOT copied from other
-```
-- Add a comment near any method that either acquires a lock or must be called while one is held.
-
----
-
 ### Error Handling
 - Do not use exceptions for control flow.
 - Return `bool` from methods that can fail: `true` = success, `false` = failure:
@@ -346,8 +323,7 @@ if (!step_two()) {
 ---
 
 ### Miscellaneous
-- Mark move constructors and move operators as `noexcept` if they genuinely cannot throw.  
-  This enables performance optimizations in standard containers:
+- Mark move constructors and move operators as `noexcept` if they genuinely cannot throw:
 ```cpp
 Player(Player&& other) noexcept;
 Player& operator=(Player&& other) noexcept;

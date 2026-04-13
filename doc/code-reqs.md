@@ -53,10 +53,7 @@ Refer to [this](https://www.geeksforgeeks.org/dsa/types-of-linked-list/)
 webpage to learn about the different types of linked lists)
 
 ## Non-functional
-- Comment each commit that you are pushing to your branch.
-- Don't mention *what* was implemented. Everyone can see that you "added abgf() function".
-- Explain *why* did you add the code. "Completed a part of task of 04132026.
-Made an implementation of `dstr::array` with basic CRUD operations."
+- All coding style rules explained [here](./code-style.md).
 - Join all the meetings. Only very important meetings will be offline.
 - Complete all the tasks in time.
 - If 2 rules above are not followed by a team member, they will be kicked from the group.
