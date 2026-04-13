@@ -62,7 +62,7 @@ All requirements for implementations are mentioned [here](doc/code-reqs.md).
 All the parts of this project are created following the initial assignment question. The exact PDF-document may be opened with [this link](./doc/AssignmentT1.pdf) 
 
 ## Requirements
-All [functional](doc/code-reqs.md#dunctional) and [non-functional](doc/code-reqs.md#non-functional)
+All [functional](doc/code-reqs.md#functional) and [non-functional](doc/code-reqs.md#non-functional)
 project requirements are mentioned in [doc/code-reqs.md](doc/code-reqs.md) file.
 
 ## Guidelines for Team Members
