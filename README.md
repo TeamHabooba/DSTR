@@ -18,7 +18,7 @@ Group 32
 - #### TP082459
 > Mohamed Abdifatah Ali
 - #### TP076354
-> Sid Abdullahi Ali
+> Said Abdullahi Ali
 - #### TP080562
 > Saleh Khaled Nasser Yaslam
 
@@ -55,10 +55,10 @@ webpage to learn about the different types of linked lists),
 
 ### Assignees
 *General* functionality - [Alex](#tp081705)  
-*Array* Implementation -  [Moha](#tp082459)  
-*List* Implementation - [Leo](#tp082557) 
+*Array* Implementation -  [Moha](#tp082459) & [SAID](#tp076354)  
+*List* Implementation - [Leo](#tp082557) & [SALEH](#tp080562)  
 
-*No Task Assigned* - [SAID](#tp076354) & [SALEH](#tp080562)
+*No Task Assigned* -  *---*
 
 
 ## Assignment Question
