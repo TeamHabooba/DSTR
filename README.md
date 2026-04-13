@@ -106,7 +106,7 @@ Documentation might be implemented in 2 ways:
 2. Write comments on each entity: classes, methods, fields, constants.
 
 You can pick one or do both.  
-Check [non-functional requirements](./doc/code-reqs.md#non-functional) to understand what exactly do you need to mention in documentation.
+Check [this](./doc/code-style.md#comments) to understand what exactly do you need to mention in documentation.
 
 ## Q & A
 Here would be stated all the unclear requirements and all other questions related to this assignment. Together with supervisor's answers.
