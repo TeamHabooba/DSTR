@@ -25,7 +25,7 @@ Group 32
 ## Task Division
 
 ### Explanation
-This assignment would be completed in subgroups.
+This assignment would be completed in subgroups.  
 1 (ONE) person completes the *general (common) part*, including:
 - making type aliases (sptr, i8, u32, etc.),
 - creating string literals/constants,
