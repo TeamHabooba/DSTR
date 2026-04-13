@@ -17,6 +17,10 @@ Group 32
 > Leon Frank Aminiel
 - #### TP082459
 > Mohamed Abdifatah Ali
+- #### TP076354
+> SAID ABDULLAHI ALI
+- #### TP080562
+> SALEH KHALED NASSER YASLAM
 
 ## Task Division
 
@@ -51,8 +55,10 @@ webpage to learn about the different types of linked lists),
 
 ### Assignees
 *General* functionality - [Alex](#tp081705)  
-*Array* Implementation -  [Moha](#TP082459)  
+*Array* Implementation -  [Moha](#tp082459)  
 *List* Implementation - [Leo](#tp082557) 
+
+*No Task Assigned* - [SAID](#tp076354) & [SALEH](#tp080562)
 
 
 ## Assignment Question
