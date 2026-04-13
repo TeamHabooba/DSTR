@@ -25,7 +25,7 @@ Group 32
 ## Task Division
 
 ### Explanation
-This assignment would be completed in subgroups. All the classes, functions and methods must be put into the `dstr::` namespace.
+This assignment would be completed in subgroups.
 1 (ONE) person completes the *general (common) part*, including:
 - making type aliases (sptr, i8, u32, etc.),
 - creating string literals/constants,
@@ -33,10 +33,7 @@ This assignment would be completed in subgroups. All the classes, functions and 
 - CLI (Command-Line Interface) basics
 
 2 (TWO) people implement the *array* part, that includes all of the following:
-- data structure implementation (with templates and `std::vector<>`-like inner storage; refer to
-[this](https://medium.com/@simonyihunie/arrays-vs-vectors-in-modern-c-a-detailed-comparison-with-examples-b797fefff7f7) 
-or [this](https://stackoverflow.com/questions/6462985/c-stdvector-vs-array-in-the-real-world) 
-webpage to learn the difference between basic array, `std::array` and `std::vector`),
+- data structure implementation,
 - sort algorithms: bubble sort, insertion sort, quick sort. More might be added later,
 - search algorithms: linear (brute-force), binary, jump. More might be added later,
 - access API (application programming interface), including square brackets (`[]`) operator,
@@ -44,14 +41,14 @@ webpage to learn the difference between basic array, `std::array` and `std::vect
 - analysis API: additional helper methods to compare time & memory used by different algorithms.
 
 2 (TWO) people implement the *list* part, that includes all of the following:
-- data structure implementation (with templates and *single*-linked nodes;
-refer to [this](https://www.geeksforgeeks.org/dsa/types-of-linked-list/)
-webpage to learn about the different types of linked lists),
+- data structure implementation,
 - sort algorithms: bubble sort, insertion sort, quick sort. More might be added later,
 - search algorithms: linear (brute-force), binary, exponential. More might be added later,
 - access API (application programming interface), including square brackets (`[]`) operator,
 - insert/delete API,
 - analysis API: additional helper methods to compare time & memory used by different algorithms.
+
+All requirements for implementations are mentioned [here](doc/code-reqs.md).
 
 ### Assignees
 *General* functionality - [Alex](#tp081705)  
@@ -65,6 +62,8 @@ webpage to learn about the different types of linked lists),
 All the parts of this project are created following the initial assignment question. The exact PDF-document may be opened with [this link](./doc/AssignmentT1.pdf) 
 
 ## Requirements
+All [functional](doc/code-reqs.md#dunctional) and [non-functional](doc/code-reqs.md#non-functional)
+project requirements are mentioned in [doc/code-reqs.md](doc/code-reqs.md) file.
 
 ## Guidelines for Team Members
 > [!TIP]
@@ -103,11 +102,11 @@ The exact guidelines and coding style requirements can be found [here](./doc/cod
 
 ### Documentation
 Documentation might be implemented in 2 ways:
-1. Create your own `.md` file in `docs` directory. No formatting required.
+1. Create your own `.md` file in `doc` directory. No formatting required.
 2. Write comments on each entity: classes, methods, fields, constants.
 
 You can pick one or do both.  
-Check [this file](./doc/code-doc.md) to understand what exactly do you need to mention in documentation.
+Check [non-functional requirements](./doc/code-reqs.md#non-functional) to understand what exactly do you need to mention in documentation.
 
 ## Q & A
 Here would be stated all the unclear requirements and all other questions related to this assignment. Together with supervisor's answers.

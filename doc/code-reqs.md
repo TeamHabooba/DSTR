@@ -35,6 +35,11 @@ An additional class `dstr::dynamic_array` must have
 internal implementation must be the same as (or at least close to)
 `std::vector`.
 
+Refer to
+[this](https://medium.com/@simonyihunie/arrays-vs-vectors-in-modern-c-a-detailed-comparison-with-examples-b797fefff7f7) 
+or [this](https://stackoverflow.com/questions/6462985/c-stdvector-vs-array-in-the-real-world
+webpage to learn the difference between basic array, `std::array` and `std::vector`).
+
 ### List
 Basic data type: `dstr::list`
 `dstr::list` must be a singly-linked list. As mentioned above,
@@ -44,6 +49,8 @@ Experimental data type: `dstr::double_list`
 Implement `dstr::double_list` class based on double linked list
 structure. No raw pointers.
 
+Refer to [this](https://www.geeksforgeeks.org/dsa/types-of-linked-list/)
+webpage to learn about the different types of linked lists)
 
 ## Non-functional
 - Comment each commit that you are pushing to your branch.
