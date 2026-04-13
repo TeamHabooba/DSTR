@@ -19,14 +19,38 @@ It is strongly recommended not to override what's written there.
 - Define all constant variables as `constexpr`. Don't use `#define` for this.
 - If you need to create an alias, prefer `using t = type` instead of `typedef`. Never use `#define` on this purpose.
 - Omit using `#define` include-guards. Use `pragma once` only.
-- 
+- Change only your code. Never rewrite, delete or create files outside of your directory.
+If any error occured in those files, please contact responsible team member(s) ASAP.
+- Don't create your own `main()` functions. If you want to use one for testing, remove it before opening a pull request.
+- Any collection types (`dstr::array`, `dstr::list`, etc.) must be templates.
 
 ### Array
-`dstr::array` must be a single memory layout containing values of the same data type.
-Internal implementation must be the same (or at least close to) as `std::vector`.
-An additional class `dstr::basic_array` must be implemeted as basic array.
+Basic data type: `dstr::array`
+`dstr::dynamic_array` must be implemeted as a single
+memory layout containing values of the same data type
+with dynamic memory allocation (smart pointers and RAII).  
+
+Experimental data type: `dstr::dynamic_array`
+An additional class `dstr::dynamic_array` must have
+internal implementation must be the same as (or at least close to)
+`std::vector`.
 
 ### List
+Basic data type: `dstr::list`
+`dstr::list` must be a singly-linked list. As mentioned above,
+use smart pointers and RAII instead of raw pointers.
+
+Experimental data type: `dstr::double_list`
+Implement `dstr::double_list` class based on double linked list
+structure. No raw pointers.
 
 
 ## Non-functional
+- Comment each commit that you are pushing to your branch.
+- Don't mention *what* was implemented. Everyone can see that you "added abgf() function".
+- Explain *why* did you add the code. "Completed a part of task of 04132026.
+Made an implementation of `dstr::array` with basic CRUD operations."
+- Join all the meetings. Only very important meetings will be offline.
+- Complete all the tasks in time.
+- If 2 rules above are not followed by a team member, they will be kicked from the group.
+- If you have a reason for absence/deadline failure, mention it in WhatsApp group chat.
