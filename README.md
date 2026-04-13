@@ -18,9 +18,9 @@ Group 32
 - #### TP082459
 > Mohamed Abdifatah Ali
 - #### TP076354
-> SAID ABDULLAHI ALI
+> Sid Abdullahi Ali
 - #### TP080562
-> SALEH KHALED NASSER YASLAM
+> Saleh Khaled Nasser Yaslam
 
 ## Task Division
 
