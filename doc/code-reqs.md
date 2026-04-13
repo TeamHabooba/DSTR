@@ -12,8 +12,9 @@ You have `sp`, `wp` and `up`, which are aliases for
 `std::shared_ptr`, `std::weak_ptr` and `std::unique_ptr` respectively.
 - Write all your code within the `dstr` namespace.
 - `using namespace std;` and any other `using namespace ...` are prohibited.
-If you want to omit `std::` prefix, writing `using std::...` (e.g.: `using std::cout; using std::cin`) allowed in `.cpp` files.
-Only in `.cpp` files!
+If you want to omit `std::` prefix, writing `using std::...` (e.g.: `using std::cout; using std::cin`) allowed.
+But please check the [`common/aliases.h`](../src/common/aliases.h) first.
+It is strongly recommended not to override what's written there.
 - Don't use C-style conversions (e.g. `(int)(variable)`) or `std::reinterpret_cast`. Only explicit `std::static_cast` allowed.
 - Define all constant variables as `constexpr`. Don't use `#define` for this.
 - If you need to create an alias, prefer `using t = type` instead of `typedef`. Never use `#define` on this purpose.
