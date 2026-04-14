@@ -132,7 +132,7 @@ class Player {
 } // namespace game
 ```
 - Always close a namespace with a comment: `} // namespace game`.
-- Do **not** use `using namespace std;` globally.  
+- Do **not** use `using namespace std;` and any other `using namespace ...` globally.  
   Use explicit aliases in `common.h` where needed (`using std::string;` etc.).
 
 ---
@@ -253,6 +253,7 @@ void Player::set_name(string name) {
   this->name_ = name;
 }
 ```
+- Define all constant variables as `constexpr`. Don't use `#define` for this.
 
 ---
 
@@ -271,16 +272,21 @@ Defined in `common/common.h`. Use them consistently across the codebase — neve
 | `DateTime` | Wrapper over `struct tm` | Timestamps and dates |
 
 Rationale: using aliases keeps the code readable and makes it easy to change the underlying type in one place if needed.
+If you need to create your own alias,
+prefer `using t = type` instead of `typedef`.
+Never use `#define` for type aliasing.
 
 ---
 
 ### Pointers and Memory Management
-- **Never use raw owning pointers**. Always use smart pointers.
-- Use `sptr<T>` (`std::shared_ptr<T>`) when multiple objects need to share ownership:
+- **Never use raw owning pointers**. You definitely *will* forget to `delete`.
+Always use smart pointers.
+- Use `sp<T>` (`std::shared_ptr<T>`) when multiple objects need to share ownership:
 ```cpp
 sptr<Player> current_player_;   // shared between Session and Lobby, for example
 ```
-- Use `std::unique_ptr<T>` when ownership is exclusive and non-shared.
+- Use `wp<T>` (`std::weak_ptr<T>`) when multiple objects need to refer the same memory without owning it.
+- Use `up<T>` (`std::unique_ptr<T>`) when ownership is exclusive and non-shared.
 - Always check for `nullptr` before dereferencing a pointer.  
   Mark places where the check is missing with `// add null-check`:
 ```cpp
@@ -288,7 +294,7 @@ void set_owner(const Player& player) {
   *owner_ = player;
 } // add null-check
 ```
-- Never return raw pointers from public API. Return `sptr<T>` or references instead.
+- Never return raw pointers from public API. Return smart pointer or references instead.
 - Prefer move semantics when passing large objects into setters — provide both overloads:
 ```cpp
 void set_player(const Player& player);   // copy

@@ -112,7 +112,7 @@ Check [this](./doc/code-style.md#comments) to understand what exactly do you nee
 Here would be stated all the unclear requirements and all other questions related to this assignment. Together with supervisor's answers.
 
 ### Q1
-What C++ standard should we use? C++ 17?
+What C++ standard should we use?
 
 #### Answer
 There are no restrictions. So we will use C++ 20.
@@ -144,7 +144,7 @@ Only in-code measurements.
 "School Bus" and "Bus"?
 
 #### Answer
-Yes, each of the above is a separate Mode of Transport.
+Each of the above is a separate Mode of Transport.
 
 ### Q6
 What is meant by "analysis operations" in assignment question?
