@@ -33,6 +33,7 @@ set(SOURCES
   "${SRC_DIR}/common/enums.h"
   "${SRC_DIR}/common/math.h"
   "${SRC_DIR}/common/time.h"
+  "${SRC_DIR}/common/resident.h"
   "${SRC_DIR}/common/common.h"
 
   "${SRC_DIR}/array/array.h"
@@ -43,7 +44,7 @@ set(SOURCES
 
   "${SRC_DIR}/headers.h"
   "${SRC_DIR}/Source.cpp"
- "src/common/resident.h")
+)
 
 
 add_executable (DSTR ${SOURCES})
