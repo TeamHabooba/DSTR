@@ -304,27 +304,104 @@ void set_player(Player&& player);        // move
 ---
 
 ### Error Handling
+
 - Do not use exceptions for control flow.
-- Return `bool` from methods that can fail: `true` = success, `false` = failure:
+- Do not use raw bool returns for methods that can fail — use
+`Result<T>` from `result.h` instead:
+
+- - Result<T> — when the method returns a value or an error.
+- - Result<void> — when the method returns nothing but can still fail.
+
+
+
 ```cpp
-bool Player::add_score(i32 amount) {
-  if (amount <= 0) return false;
+// Good — returns a value or an error
+Result<i32> Player::compute_rank() const {
+  if (score_ < 0) {
+    return Err<i32>(ErrorCode::INVALID_ARGUMENT, "Score cannot be negative");
+  }
+  return Ok(score_ / 100);
+}
+
+// Good — no return value, but failure is possible
+Result<void> Player::add_score(i32 amount) {
+  if (amount <= 0) {
+    return Err(ErrorCode::INVALID_ARGUMENT, "Amount must be positive");
+  }
   score_ += amount;
-  return true;
+  return Ok();
 }
 ```
-- Store human-readable error descriptions in a dedicated `err_msg_` field where applicable.
-- For multi-step operations, always implement rollback logic if a later step fails:
+
+- Always use the `Ok(...)` and `Err(...)` helpers — do not construct `Result` or `Error` directly.
+- Pick the `ErrorCode` that most accurately describes the failure. Do not use EXCEPTION as a substitute for proper error handling.
+- Never silently discard a returned `Result`. Always check it via `is_ok()` / `is_error()` or the explicit operator bool:
+
 ```cpp
-if (!step_one()) {
-  return false;
+// Good
+auto result = player.add_score(amount);
+if (!result) {
+  log_error(result.error().message());
+  return;
 }
-if (!step_two()) {
-  rollback_step_one();   // undo what step one did
-  return false;
+
+// Also acceptable for compact checks
+if (auto r = player.add_score(amount); !r) {
+  log_error(r.error().message());
+  return;
+}
+
+// Bad — result silently discarded
+player.add_score(amount);
+```
+
+- Never call `.value()` without checking `is_ok()` first — it will `throw` if the result holds an error:
+
+```cpp
+// Good
+auto result = player.compute_rank();
+if (result.is_ok()) {
+  display(result.value());
+}
+
+// Bad — potential throw if result holds an error
+display(result.value());
+```
+
+- For multi-step operations, implement rollback if a step fails. Propagate the original Error outward without replacing it:
+
+```cpp
+auto r1 = step_one();
+if (!r1) {
+  return r1; // propagate as-is
+}
+
+auto r2 = step_two();
+if (!r2) {
+  rollback_step_one();
+  return r2;
 }
 ```
-- Never silently ignore a `false` return value from any method.
+
+- Store human-readable error descriptions directly in `Error::message()` — a separate `err_msg_` field is no longer needed.
+The message should explain the cause, not restate the error code:
+
+```cpp
+// Good
+return Err<void>(ErrorCode::OUT_OF_RANGE, "Index 42 is out of bounds for size 10");
+
+// Bad
+return Err<void>(ErrorCode::OUT_OF_RANGE, "out of range error");
+```
+
+- Methods that are not yet implemented should return `Err()`
+with no arguments — this automatically sets `ErrorCode::NOT_IMPLEMENTED`:
+
+```cpp
+Result<void> Player::sync_with_server() {
+  return Err(); // NOT_IMPLEMENTED
+}
+```
 
 ---
 
