@@ -453,8 +453,11 @@ if (speed == target_speed) { ... }
 #pragma once
 
 #include "common/common.h"
+#include "common/result.h"
+
 
 namespace game {
+
 
 class Player {
  private:
@@ -488,11 +491,12 @@ class Player {
   void set_score(i32 value);
 
   // Domain methods
-  bool add_score(i32 amount);
-  void reset();
+  Result<void> add_score(i32 amount);
+  Result<void> reset();
 
   friend std::ostream& operator<<(std::ostream& os, const Player& p);
 };
+
 
 } // namespace game
 ```
@@ -502,7 +506,9 @@ class Player {
 // player.cpp
 #include "player.h"
 
+
 namespace game {
+
 
 // =====Constructors
 Player::Player() noexcept
@@ -564,14 +570,17 @@ void Player::set_name(string value) { name_ = value; }
 void Player::set_score(i32 value) { score_ = value; }
 
 // =====Domain methods
-bool Player::add_score(i32 amount) {
-  if (amount <= 0) return false;
+Result<void> Player::add_score(i32 amount) {
+  if (amount <= 0) {
+    return Err(ErrorCode::INVALID_ARGUMENT, "Amount must be positive");
+  }
   score_ += amount;
-  return true;
+  return Ok();
 }
 
-void Player::reset() {
+Result<void> Player::reset() {
   score_ = 0;
+  return Ok();
 }
 
 // =====Output op
@@ -579,6 +588,7 @@ std::ostream& operator<<(std::ostream& os, const Player& p) {
   os << "Player \"" << p.name_ << "\", id: " << p.id_ << ", score: " << p.score_;
   return os;
 }
+
 
 } // namespace game
 ```
