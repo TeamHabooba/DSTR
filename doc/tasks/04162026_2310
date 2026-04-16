@@ -1,0 +1,27 @@
+# Task list of April, 14, 2026.
+- [Tasks](#tasks)
+- [Deadline](#deadline)
+- [Progress](#progress)
+
+
+## Tasks
+The same as in [04142026_1724.md](./04142026_1724.md)
+
+## Deadline
+15.04.2026 (April, 15) 17:00 (UTC+08)
+
+**MOVED** to 18.04.2026 (April, 18) 23:59 (UTC+08)
+Reasoning: 
+Team array ([Moha](#tp082459) & [Said](#tp076354)) failed to complete the task in time.
+[Moha](#tp082459) did the implementation from scratch, but did not checked for mistakes.
+[Said](#tp076354) did nothing.
+
+Team list ([Leo](#tp082557) & [Saleh](#tp080562)) failed to complete the task in time.
+[Leo](#tp082557) created a `dstr::List` implementation and was instructed with fixes, but didn't apply them.
+[Saleh](#tp080562) did nothing.
+
+## Progress
+All team members failed the previous deadline. Task reassigned.
+Assigned on 14.04.2026 at 17:25 (UTC+08).
+All team members failed the previous deadline. Task reassigned.
+Assigned on 16.04.2026 at 23:10 (UTC+08).
