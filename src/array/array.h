@@ -10,21 +10,21 @@
 namespace dstr {
 
 template <typename T>
-class array {
+class Array {
  private:
   up<T[]> data_;
   i32 size_;
 
  public:
-  explicit array(i32 size);
-  array(const array& other);
-  array(array&& other) noexcept;
+  explicit Array(i32 size);
+  Array(const Array& other);
+  Array(Array&& other) noexcept;
 
-  bool operator==(const array& other) const;
-  bool operator!=(const array& other) const;
+  bool operator==(const Array& other) const;
+  bool operator!=(const Array& other) const;
 
-  array& operator=(const array& other);
-  array& operator=(array&& other) noexcept;
+  Array& operator=(const Array& other);
+  Array& operator=(Array&& other) noexcept;
 
   T& operator[](i32 index);
   const T& operator[](i32 index) const;
@@ -69,7 +69,7 @@ class array {
 
   void print() const;
 
-  friend std::ostream& operator<<(std::ostream& os, const array<T>& arr) {
+  friend std::ostream& operator<<(std::ostream& os, const Array<T>& arr) {
     for (i32 i = 0; i < arr.size_; i++) {
       os << "[" << i << "] " << arr.data_[i] << "\n";
     }
@@ -87,6 +87,4 @@ class array {
 
 };
 
-} // namespace dstr
-
-#include "array.cpp"
+} 
