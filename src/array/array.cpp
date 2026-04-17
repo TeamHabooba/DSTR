@@ -1,15 +1,17 @@
+#include "Array.h"
+
 #include <cmath>
 #include <stdexcept>
 
 namespace dstr {
 
 template <typename T>
-array<T>::array(i32 size)
+Array<T>::Array(i32 size)
     : data_(std::make_unique<T[]>(size)),
       size_(size) {}
 
 template <typename T>
-array<T>::array(const array& other)
+Array<T>::Array(const Array& other)
     : data_(std::make_unique<T[]>(other.size_)),
       size_(other.size_) {
   for (i32 i = 0; i < size_; i++) {
@@ -18,12 +20,12 @@ array<T>::array(const array& other)
 }
 
 template <typename T>
-array<T>::array(array&& other) noexcept
+Array<T>::Array(Array&& other) noexcept
     : data_(std::move(other.data_)),
       size_(std::exchange(other.size_, 0)) {}
 
 template <typename T>
-bool array<T>::operator==(const array& other) const {
+bool Array<T>::operator==(const Array& other) const {
   if (size_ != other.size_) {
     return false;
   }
@@ -36,12 +38,12 @@ bool array<T>::operator==(const array& other) const {
 }
 
 template <typename T>
-bool array<T>::operator!=(const array& other) const {
+bool Array<T>::operator!=(const Array& other) const {
   return !(*this == other);
 }
 
 template <typename T>
-array<T>& array<T>::operator=(const array& other) {
+Array<T>& Array<T>::operator=(const Array& other) {
   if (this != &other) {
     data_ = std::make_unique<T[]>(other.size_);
     size_ = other.size_;
@@ -53,7 +55,7 @@ array<T>& array<T>::operator=(const array& other) {
 }
 
 template <typename T>
-array<T>& array<T>::operator=(array&& other) noexcept {
+Array<T>& Array<T>::operator=(Array&& other) noexcept {
   if (this != &other) {
     data_ = std::move(other.data_);
     size_ = std::exchange(other.size_, 0);
@@ -62,45 +64,45 @@ array<T>& array<T>::operator=(array&& other) noexcept {
 }
 
 template <typename T>
-T& array<T>::operator[](i32 index) {
+T& Array<T>::operator[](i32 index) {
   if (index < 0 || index >= size_) {
-    throw std::out_of_range("array: index out of range");
+    throw std::out_of_range("Array: index out of range");
   }
   return data_[index];
 }
 
 template <typename T>
-const T& array<T>::operator[](i32 index) const {
+const T& Array<T>::operator[](i32 index) const {
   if (index < 0 || index >= size_) {
-    throw std::out_of_range("array: index out of range");
+    throw std::out_of_range("Array: index out of range");
   }
   return data_[index];
 }
 
 template <typename T>
-T& array<T>::get(i32 index) {
+T& Array<T>::get(i32 index) {
   return (*this)[index];
 }
 
 template <typename T>
-const T& array<T>::get(i32 index) const {
+const T& Array<T>::get(i32 index) const {
   return (*this)[index];
 }
 
 template <typename T>
-i32 array<T>::size() const {
+i32 Array<T>::size() const {
   return size_;
 }
 
 template <typename T>
-void array<T>::fill(const T& value) {
+void Array<T>::fill(const T& value) {
   for (i32 i = 0; i < size_; i++) {
     data_[i] = value;
   }
 }
 
 template <typename T>
-bool array<T>::update(i32 index, const T& value) {
+bool Array<T>::update(i32 index, const T& value) {
   if (index < 0 || index >= size_) {
     return false;
   }
@@ -109,7 +111,7 @@ bool array<T>::update(i32 index, const T& value) {
 }
 
 template <typename T>
-bool array<T>::reset(i32 index) {
+bool Array<T>::reset(i32 index) {
   if (index < 0 || index >= size_) {
     return false;
   }
@@ -119,7 +121,7 @@ bool array<T>::reset(i32 index) {
 
 template <typename T>
 template <typename Comparator>
-void array<T>::bubble_sort(Comparator comp) {
+void Array<T>::bubble_sort(Comparator comp) {
   for (i32 i = 0; i < size_ - 1; i++) {
     bool swapped = false;
 
@@ -138,7 +140,7 @@ void array<T>::bubble_sort(Comparator comp) {
 
 template <typename T>
 template <typename Comparator>
-void array<T>::insertion_sort(Comparator comp) {
+void Array<T>::insertion_sort(Comparator comp) {
   for (i32 i = 1; i < size_; i++) {
     T key = data_[i];
     i32 j = i - 1;
@@ -154,7 +156,7 @@ void array<T>::insertion_sort(Comparator comp) {
 
 template <typename T>
 template <typename Comparator>
-void array<T>::quick_sort(Comparator comp) {
+void Array<T>::quick_sort(Comparator comp) {
   if (size_ <= 1) {
     return;
   }
@@ -163,7 +165,7 @@ void array<T>::quick_sort(Comparator comp) {
 
 template <typename T>
 template <typename KeyComp>
-i32 array<T>::linear_search(KeyComp key_comp) const {
+i32 Array<T>::linear_search(KeyComp key_comp) const {
   for (i32 i = 0; i < size_; i++) {
     if (key_comp(data_[i])) {
       return i;
@@ -174,7 +176,7 @@ i32 array<T>::linear_search(KeyComp key_comp) const {
 
 template <typename T>
 template <typename Comparator, typename KeyComp>
-i32 array<T>::binary_search(Comparator comp, KeyComp key_comp, const T& target) const {
+i32 Array<T>::binary_search(Comparator comp, KeyComp key_comp, const T& target) const {
   i32 low = 0;
   i32 high = size_ - 1;
 
@@ -194,7 +196,7 @@ i32 array<T>::binary_search(Comparator comp, KeyComp key_comp, const T& target) 
 
 template <typename T>
 template <typename Comparator, typename KeyComp>
-i32 array<T>::jump_search(Comparator comp, KeyComp key_comp) const {
+i32 Array<T>::jump_search(Comparator comp, KeyComp key_comp) const {
   if (size_ == 0) {
     return -1;
   }
@@ -203,7 +205,10 @@ i32 array<T>::jump_search(Comparator comp, KeyComp key_comp) const {
   i32 prev = 0;
 
   while (prev < size_) {
-    i32 block_end = std::min(prev + step, size_) - 1;
+    i32 block_end = prev + step;
+    if (block_end >= size_) {
+      block_end = size_ - 1;
+    }
 
     if (key_comp(data_[prev])) {
       return prev;
@@ -216,8 +221,12 @@ i32 array<T>::jump_search(Comparator comp, KeyComp key_comp) const {
     }
   }
 
-  i32 block_end = std::min(prev + step, size_);
-  for (i32 i = prev; i < block_end; i++) {
+  i32 scan_end = prev + step;
+  if (scan_end > size_) {
+    scan_end = size_;
+  }
+
+  for (i32 i = prev; i < scan_end; i++) {
     if (key_comp(data_[i])) {
       return i;
     }
@@ -227,7 +236,7 @@ i32 array<T>::jump_search(Comparator comp, KeyComp key_comp) const {
 }
 
 template <typename T>
-i32 array<T>::memory_usage() const {
+i32 Array<T>::memory_usage() const {
   return static_cast<i32>(
     (size_ * sizeof(T))
     + sizeof(data_)
@@ -237,7 +246,7 @@ i32 array<T>::memory_usage() const {
 
 template <typename T>
 template <typename Func>
-long long array<T>::measure_time(Func func) {
+long long Array<T>::measure_time(Func func) {
   auto start = std::chrono::high_resolution_clock::now();
   func();
   auto end = std::chrono::high_resolution_clock::now();
@@ -246,14 +255,25 @@ long long array<T>::measure_time(Func func) {
 
 template <typename T>
 template <typename Comparator>
-void array<T>::compare_sorts(Comparator comp) const {
-  array<T> copy_bubble(*this);
-  array<T> copy_insert(*this);
-  array<T> copy_quick(*this);
+void Array<T>::compare_sorts(Comparator comp) const {
+  Array<T> copy_bubble(*this);
+  Array<T> copy_insert(*this);
+  Array<T> copy_quick(*this);
 
-  long long t_bubble = measure_time([&]() { copy_bubble.bubble_sort(comp); });
-  long long t_insert = measure_time([&]() { copy_insert.insertion_sort(comp); });
-  long long t_quick = measure_time([&]() { copy_quick.quick_sort(comp); });
+  auto start_bubble = std::chrono::high_resolution_clock::now();
+  copy_bubble.bubble_sort(comp);
+  auto end_bubble = std::chrono::high_resolution_clock::now();
+  long long t_bubble = std::chrono::duration_cast<std::chrono::microseconds>(end_bubble - start_bubble).count();
+
+  auto start_insert = std::chrono::high_resolution_clock::now();
+  copy_insert.insertion_sort(comp);
+  auto end_insert = std::chrono::high_resolution_clock::now();
+  long long t_insert = std::chrono::duration_cast<std::chrono::microseconds>(end_insert - start_insert).count();
+
+  auto start_quick = std::chrono::high_resolution_clock::now();
+  copy_quick.quick_sort(comp);
+  auto end_quick = std::chrono::high_resolution_clock::now();
+  long long t_quick = std::chrono::duration_cast<std::chrono::microseconds>(end_quick - start_quick).count();
 
   i32 mem = memory_usage();
 
@@ -263,21 +283,32 @@ void array<T>::compare_sorts(Comparator comp) const {
   std::cout << "+--------------------+----------------+----------------+\n";
   std::cout << "| Bubble Sort        | " << std::setw(14) << t_bubble << " | " << std::setw(14) << mem << " |\n";
   std::cout << "| Insertion Sort     | " << std::setw(14) << t_insert << " | " << std::setw(14) << mem << " |\n";
-  std::cout << "| Quick Sort         | " << std::setw(14) << t_quick << " | " << std::setw(14) << mem << " |\n";
+  std::cout << "| Quick Sort         | " << std::setw(14) << t_quick  << " | " << std::setw(14) << mem << " |\n";
   std::cout << "+--------------------+----------------+----------------+\n";
   std::cout << "  Total elements: " << size_ << "\n";
 }
 
 template <typename T>
 template <typename Comparator, typename KeyComp>
-void array<T>::compare_searches(Comparator comp, KeyComp key_comp, const T& target) const {
+void Array<T>::compare_searches(Comparator comp, KeyComp key_comp, const T& target) const {
   i32 r_linear = -1;
   i32 r_binary = -1;
   i32 r_jump = -1;
 
-  long long t_linear = measure_time([&]() { r_linear = linear_search(key_comp); });
-  long long t_binary = measure_time([&]() { r_binary = binary_search(comp, key_comp, target); });
-  long long t_jump = measure_time([&]() { r_jump = jump_search(comp, key_comp); });
+  auto start_linear = std::chrono::high_resolution_clock::now();
+  r_linear = linear_search(key_comp);
+  auto end_linear = std::chrono::high_resolution_clock::now();
+  long long t_linear = std::chrono::duration_cast<std::chrono::microseconds>(end_linear - start_linear).count();
+
+  auto start_binary = std::chrono::high_resolution_clock::now();
+  r_binary = binary_search(comp, key_comp, target);
+  auto end_binary = std::chrono::high_resolution_clock::now();
+  long long t_binary = std::chrono::duration_cast<std::chrono::microseconds>(end_binary - start_binary).count();
+
+  auto start_jump = std::chrono::high_resolution_clock::now();
+  r_jump = jump_search(comp, key_comp);
+  auto end_jump = std::chrono::high_resolution_clock::now();
+  long long t_jump = std::chrono::duration_cast<std::chrono::microseconds>(end_jump - start_jump).count();
 
   std::cout << "\n";
   std::cout << "+--------------------+------------+--------+\n";
@@ -285,20 +316,20 @@ void array<T>::compare_searches(Comparator comp, KeyComp key_comp, const T& targ
   std::cout << "+--------------------+------------+--------+\n";
   std::cout << "| Linear Search      | " << std::setw(10) << t_linear << " | " << std::setw(6) << r_linear << " |\n";
   std::cout << "| Binary Search      | " << std::setw(10) << t_binary << " | " << std::setw(6) << r_binary << " |\n";
-  std::cout << "| Jump Search        | " << std::setw(10) << t_jump << " | " << std::setw(6) << r_jump << " |\n";
+  std::cout << "| Jump Search        | " << std::setw(10) << t_jump   << " | " << std::setw(6) << r_jump   << " |\n";
   std::cout << "+--------------------+------------+--------+\n";
   std::cout << "  Total elements: " << size_ << "\n";
 }
 
 template <typename T>
-void array<T>::print() const {
+void Array<T>::print() const {
   for (i32 i = 0; i < size_; i++) {
     std::cout << "[" << i << "] " << data_[i] << "\n";
   }
 }
 
 template <typename T>
-void array<T>::swap_elements(i32 i, i32 j) {
+void Array<T>::swap_elements(i32 i, i32 j) {
   T temp = data_[i];
   data_[i] = data_[j];
   data_[j] = temp;
@@ -306,7 +337,7 @@ void array<T>::swap_elements(i32 i, i32 j) {
 
 template <typename T>
 template <typename Comparator>
-i32 array<T>::partition(Comparator comp, i32 low, i32 high) {
+i32 Array<T>::partition(Comparator comp, i32 low, i32 high) {
   T pivot = data_[high];
   i32 i = low - 1;
 
@@ -323,7 +354,7 @@ i32 array<T>::partition(Comparator comp, i32 low, i32 high) {
 
 template <typename T>
 template <typename Comparator>
-void array<T>::quick_sort_helper(Comparator comp, i32 low, i32 high) {
+void Array<T>::quick_sort_helper(Comparator comp, i32 low, i32 high) {
   if (low < high) {
     i32 pivot_pos = partition(comp, low, high);
     quick_sort_helper(comp, low, pivot_pos - 1);
