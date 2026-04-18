@@ -1,38 +1,39 @@
+//list.h
 #pragma once
 
 #include <memory>
-#include "common/aliases.h" // assuming sp, wp, up defined here
+#include "common/aliases.h" 
 
 namespace dstr {
 
-    template <typename T>
-    class list {
+  template <typename T>
+  class list {
     private:
-        struct Node {
-            T data;
-            sp<Node> next;
+    struct Node {
+      T data;
+      sp<Node> next;
 
-            Node(const T& value);
-        };
+      Node(const T& value);
+    };
 
-        sp<Node> head;
+    sp<Node> head;
 
     public:
-        list();
-        ~list();
+      list();
+      ~list();
 
-        // Basic operations
-        void insert(const T& value);
-        void display() const;
+    // Basic operations
+    void insert(const T& value);
+    void display() const;
 
-        // Searching
-        void search(const T& value) const;
+    // Searching
+    void search(const T& value) const;
 
-        // Sorting
-        void sort();
+    // Sorting
+    void sort();
 
-        // Utility
-        bool empty() const;
+    // Utility
+    bool empty() const;
     };
 
 } // namespace dstr
