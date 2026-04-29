@@ -1,3 +1,5 @@
+#include "DynamicArray.h"
+
 #include <cmath>
 #include <stdexcept>
 
