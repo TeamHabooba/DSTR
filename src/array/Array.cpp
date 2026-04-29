@@ -1,4 +1,4 @@
-#include "DynamicArray.h"
+#include "Array.h"
 
 #include <cmath>
 #include <stdexcept>
@@ -381,7 +381,7 @@ void DynamicArray<T>::print() const {
 template <typename T>
 void DynamicArray<T>::grow() {
   capacity_ = capacity_ * 2;
-  up<T[]> new_data = std::make_unique<T[]>(capacity_);
+  std::unique_ptr<T[]> new_data = std::make_unique<T[]>(capacity_);
   for (i32 i = 0; i < size_; i++) {
     new_data[i] = data_[i];
   }

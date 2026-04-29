@@ -1,24 +1,24 @@
 #pragma once
 
 #include <chrono>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 
-#include "common/aliases.h"
+#include "../common/aliases.h"
 
 namespace dstr {
 
 template <typename T>
 class DynamicArray {
-
  private:
-  up<T[]> data_;
-  i32     size_;
-  i32     capacity_;
+  std::unique_ptr<T[]> data_;
+  i32 size_;
+  i32 capacity_;
 
  public:
-
   DynamicArray();
 
   explicit DynamicArray(i32 initial_capacity);
@@ -35,10 +35,10 @@ class DynamicArray {
 
   DynamicArray& operator=(DynamicArray&& other) noexcept;
 
-  T&       operator[](i32 index);
+  T& operator[](i32 index);
   const T& operator[](i32 index) const;
 
-  T&       get(i32 index);
+  T& get(i32 index);
   const T& get(i32 index) const;
 
   i32 size() const;
@@ -95,7 +95,6 @@ class DynamicArray {
   }
 
  private:
-
   void grow();
 
   void swap_elements(i32 i, i32 j);
@@ -105,7 +104,4 @@ class DynamicArray {
 
   template <typename Comparator>
   void quick_sort_helper(Comparator comp, i32 low, i32 high);
-
 };
-
-}
