@@ -1,39 +1,39 @@
 #pragma once
 
+#define DSTR_ARRAY_H_INCLUDED
+
 #include <chrono>
-#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <stdexcept>
 
 #include "../common/aliases.h"
 
 namespace dstr {
 
 template <typename T>
-class DynamicArray {
+class Array {
  private:
   std::unique_ptr<T[]> data_;
   i32 size_;
   i32 capacity_;
 
  public:
-  DynamicArray();
+  Array();
 
-  explicit DynamicArray(i32 initial_capacity);
+  explicit Array(i32 initial_capacity);
 
-  DynamicArray(const DynamicArray& other);
+  Array(const Array& other);
 
-  DynamicArray(DynamicArray&& other) noexcept;
+  Array(Array&& other) noexcept;
 
-  bool operator==(const DynamicArray& other) const;
+  bool operator==(const Array& other) const;
 
-  bool operator!=(const DynamicArray& other) const;
+  bool operator!=(const Array& other) const;
 
-  DynamicArray& operator=(const DynamicArray& other);
+  Array& operator=(const Array& other);
 
-  DynamicArray& operator=(DynamicArray&& other) noexcept;
+  Array& operator=(Array&& other) noexcept;
 
   T& operator[](i32 index);
   const T& operator[](i32 index) const;
@@ -87,7 +87,7 @@ class DynamicArray {
 
   void print() const;
 
-  friend std::ostream& operator<<(std::ostream& os, const DynamicArray<T>& arr) {
+  friend std::ostream& operator<<(std::ostream& os, const Array<T>& arr) {
     for (i32 i = 0; i < arr.size_; i++) {
       os << "[" << i << "] " << arr.data_[i] << "\n";
     }
@@ -105,3 +105,7 @@ class DynamicArray {
   template <typename Comparator>
   void quick_sort_helper(Comparator comp, i32 low, i32 high);
 };
+
+}
+
+#include "Array.cpp"
