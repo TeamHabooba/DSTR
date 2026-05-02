@@ -30,10 +30,10 @@ namespace dstr {
       option = std::stoi(trim(soption));
     }
     catch (const std::invalid_argument& e) {
-      return Err<int>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_MSG_NOT_NUMBER));
+      return Err<int>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_NOT_NUMBER));
     }
     if (option < 0) {
-      return Err<int>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_MSG_MENU_OPT_BELOW_ZERO));
+      return Err<int>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_MENU_OPT_BELOW_ZERO));
     }
     return Ok<int>(option);
   }
@@ -49,7 +49,7 @@ namespace dstr {
     }
     switch (option.value()) {
     case 0:
-      return Err(ErrorCode::TERMINATED, string(strings::ERR_MSG_TERMINATED));
+      return Err(ErrorCode::TERMINATED, string(strings::ERR_TERMINATED));
     }
   }
 

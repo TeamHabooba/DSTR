@@ -168,11 +168,11 @@ namespace dstr {
 
   template<typename T>
   Result<T> Err() {
-    return Result<T>(Error(ErrorCode::NOT_IMPLEMENTED, strings::ERR_MSG_NOT_IMPLEMENTED));
+    return Result<T>(Error(ErrorCode::NOT_IMPLEMENTED, strings::ERR_NOT_IMPLEMENTED));
   }
 
   inline Result<void> Err() {
-    return Result<void>(Error(ErrorCode::NOT_IMPLEMENTED, strings::ERR_MSG_NOT_IMPLEMENTED));
+    return Result<void>(Error(ErrorCode::NOT_IMPLEMENTED, strings::ERR_NOT_IMPLEMENTED));
   }
 
 
