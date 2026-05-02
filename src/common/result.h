@@ -38,7 +38,7 @@ namespace dstr {
         : code_(code), message_(std::move(message)) {
     }
 
-    Error(ErrorCode code, string_const message)
+    Error(ErrorCode code, std::string_view message)
         : code_(code), message_(message) {
     }
 
