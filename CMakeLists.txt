@@ -29,9 +29,11 @@ set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(SOURCES
   "${SRC_DIR}/list/list.cpp"
   "${SRC_DIR}/array/array.cpp"
+  "${SRC_DIR}/files/files.cpp"
+  "${SRC_DIR}/cli/cli.cpp"
 
   "${SRC_DIR}/Source.cpp"
- "src/cli/cli.cpp")
+)
 
 
 add_executable (DSTR ${SOURCES})
