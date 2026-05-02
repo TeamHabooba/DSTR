@@ -31,7 +31,7 @@ set(SOURCES
   "${SRC_DIR}/array/array.cpp"
 
   "${SRC_DIR}/Source.cpp"
-)
+ "src/cli/cli.cpp")
 
 
 add_executable (DSTR ${SOURCES})

@@ -23,6 +23,7 @@ namespace dstr {
     INVALID_DIMENSIONS,
     IO_ERROR,
     EXCEPTION,
+    TERMINATED,
     NOT_IMPLEMENTED
   };
 
@@ -116,6 +117,16 @@ namespace dstr {
 
     Result(ErrorCode code, std::string message)
         : error_(code, std::move(message)) {
+    }
+
+    template<typename T>
+    Result(Result<T> parametrised) {
+      if (parametrised) {
+        error_ = Error();
+      }
+      else {
+        error_ = parametrised.error();
+      }
     }
 
     bool is_ok() const noexcept {

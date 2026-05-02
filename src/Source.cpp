@@ -1,10 +1,7 @@
 #include "./headers.h"
 
 
-using std::cout;
-
-
 int main(char* argv, int argc){
-  cout << dstr::strings::HELLO_MSG << '\n';
+  dstr::cli_start(argv, argc);
   return 0;
 }
