@@ -2,13 +2,17 @@
 
 
 namespace dstr {
+
+
 	enum class ModeOfTransport {
 		CAR,
 		BUS,
 		BICYCLE,
 		WALKING,
-		//CARPOOL,
-		//SCHOOL_BUS,
+		CARPOOL,
+		SCHOOL_BUS,
 
 	};
-}
+
+
+} // namespace dstr

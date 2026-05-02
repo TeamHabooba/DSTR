@@ -13,7 +13,6 @@ Refer to the project lead if you find anything unspecified. But please,
 - [Visibility and Access](#visibility-and-access)
 - [Type Aliases and Primitives](#type-aliases-and-primitives)
 - [Pointers and Memory Management](#pointers-and-memory-management)
-- [Concurrency](#concurrency)
 - [Error Handling](#error-handling)
 - [Miscellaneous](#miscellaneous)
 - [Quick Class Template](#quick-class-template)
@@ -53,7 +52,7 @@ Refer to the project lead if you find anything unspecified. But please,
 - **Type aliases**: short lowercase aliases — `i32`, `id_t`, `sptr<T>`.
 - Avoid Hungarian notation and prefixes like `m_name`, `_name`, `pValue`.
 
-Full breakdown:
+Full breakdown table:
 
 | Thing | Style | Example |
 |---|---|---|
@@ -133,7 +132,7 @@ class Player {
 } // namespace game
 ```
 - Always close a namespace with a comment: `} // namespace game`.
-- Do **not** use `using namespace std;` globally.  
+- Do **not** use `using namespace std;` and any other `using namespace ...` globally.  
   Use explicit aliases in `common.h` where needed (`using std::string;` etc.).
 
 ---
@@ -254,6 +253,7 @@ void Player::set_name(string name) {
   this->name_ = name;
 }
 ```
+- Define all constant variables as `constexpr`. Don't use `#define` for this.
 
 ---
 
@@ -262,24 +262,31 @@ Defined in `common/common.h`. Use them consistently across the codebase — neve
 
 | Alias | Meaning | Typical usage |
 |---|---|---|
-| `i32` | 32-bit signed integer (`int32_t`) | Counts, amounts, scores |
+| `i32` |  `int32_t` | 32-bit signed integer |
 | `id_t` | Unsigned entity ID | IDs for most entities |
 | `lid_t` | Large / long ID | IDs for entities with bigger ID space |
-| `sptr<T>` | `std::shared_ptr<T>` | Shared ownership between objects |
+| `sp<T>` | `std::shared_ptr<T>` | Shared ownership between objects |
+| `wp<T>` | `std::weak_ptr<T>` | Weak pointer to an object owned by `sp<T>` |
+| `up<T>` | `std::unique_ptr` | RAII-based pointer. Prefer this in most cases |
 | `string` | `std::string` | All text (via `using std::string`) |
 | `DateTime` | Wrapper over `struct tm` | Timestamps and dates |
 
 Rationale: using aliases keeps the code readable and makes it easy to change the underlying type in one place if needed.
+If you need to create your own alias,
+prefer `using t = type` instead of `typedef`.
+Never use `#define` for type aliasing.
 
 ---
 
 ### Pointers and Memory Management
-- **Never use raw owning pointers**. Always use smart pointers.
-- Use `sptr<T>` (`std::shared_ptr<T>`) when multiple objects need to share ownership:
+- **Never use raw owning pointers**. You definitely *will* forget to `delete`.
+Always use smart pointers.
+- Use `sp<T>` (`std::shared_ptr<T>`) when multiple objects need to share ownership:
 ```cpp
 sptr<Player> current_player_;   // shared between Session and Lobby, for example
 ```
-- Use `std::unique_ptr<T>` when ownership is exclusive and non-shared.
+- Use `wp<T>` (`std::weak_ptr<T>`) when multiple objects need to refer the same memory without owning it.
+- Use `up<T>` (`std::unique_ptr<T>`) when ownership is exclusive and non-shared.
 - Always check for `nullptr` before dereferencing a pointer.  
   Mark places where the check is missing with `// add null-check`:
 ```cpp
@@ -287,7 +294,7 @@ void set_owner(const Player& player) {
   *owner_ = player;
 } // add null-check
 ```
-- Never return raw pointers from public API. Return `sptr<T>` or references instead.
+- Never return raw pointers from public API. Return smart pointer or references instead.
 - Prefer move semantics when passing large objects into setters — provide both overloads:
 ```cpp
 void set_player(const Player& player);   // copy
@@ -296,58 +303,110 @@ void set_player(Player&& player);        // move
 
 ---
 
-### Concurrency
-- If a class instance can be accessed from multiple threads simultaneously, give it its own `std::mutex` field.
-- Acquire multiple mutexes at once safely using `std::lock()` to prevent deadlocks:
-```cpp
-std::mutex& mtx_a = obj_a->get_mutex();
-std::mutex& mtx_b = obj_b->get_mutex();
-
-std::lock(mtx_a, mtx_b);
-std::lock_guard<std::mutex> lock_a(mtx_a, std::adopt_lock);
-std::lock_guard<std::mutex> lock_b(mtx_b, std::adopt_lock);
-```
-- Never lock/unlock manually — always use RAII wrappers (`lock_guard`, `unique_lock`).
-- `std::mutex` is **non-copyable**. In copy constructors, always initialize a fresh mutex instead of copying from the source object:
-```cpp
-Player::Player(const Player& other)
-    : id_(other.id_),
-      name_(other.name_),
-      score_(other.score_),
-      mutex_{} {}   // fresh mutex — NOT copied from other
-```
-- Add a comment near any method that either acquires a lock or must be called while one is held.
-
----
-
 ### Error Handling
+
 - Do not use exceptions for control flow.
-- Return `bool` from methods that can fail: `true` = success, `false` = failure:
+- Do not use raw bool returns for methods that can fail — use
+`Result<T>` from `result.h` instead:
+
+- - Result<T> — when the method returns a value or an error.
+- - Result<void> — when the method returns nothing but can still fail.
+
+
+
 ```cpp
-bool Player::add_score(i32 amount) {
-  if (amount <= 0) return false;
+// Good — returns a value or an error
+Result<i32> Player::compute_rank() const {
+  if (score_ < 0) {
+    return Err<i32>(ErrorCode::INVALID_ARGUMENT, "Score cannot be negative");
+  }
+  return Ok(score_ / 100);
+}
+
+// Good — no return value, but failure is possible
+Result<void> Player::add_score(i32 amount) {
+  if (amount <= 0) {
+    return Err(ErrorCode::INVALID_ARGUMENT, "Amount must be positive");
+  }
   score_ += amount;
-  return true;
+  return Ok();
 }
 ```
-- Store human-readable error descriptions in a dedicated `err_msg_` field where applicable.
-- For multi-step operations, always implement rollback logic if a later step fails:
+
+- Always use the `Ok(...)` and `Err(...)` helpers — do not construct `Result` or `Error` directly.
+- Pick the `ErrorCode` that most accurately describes the failure. Do not use EXCEPTION as a substitute for proper error handling.
+- Never silently discard a returned `Result`. Always check it via `is_ok()` / `is_error()` or the explicit operator bool:
+
 ```cpp
-if (!step_one()) {
-  return false;
+// Good
+auto result = player.add_score(amount);
+if (!result) {
+  log_error(result.error().message());
+  return;
 }
-if (!step_two()) {
-  rollback_step_one();   // undo what step one did
-  return false;
+
+// Also acceptable for compact checks
+if (auto r = player.add_score(amount); !r) {
+  log_error(r.error().message());
+  return;
+}
+
+// Bad — result silently discarded
+player.add_score(amount);
+```
+
+- Never call `.value()` without checking `is_ok()` first — it will `throw` if the result holds an error:
+
+```cpp
+// Good
+auto result = player.compute_rank();
+if (result.is_ok()) {
+  display(result.value());
+}
+
+// Bad — potential throw if result holds an error
+display(result.value());
+```
+
+- For multi-step operations, implement rollback if a step fails. Propagate the original Error outward without replacing it:
+
+```cpp
+auto r1 = step_one();
+if (!r1) {
+  return r1; // propagate as-is
+}
+
+auto r2 = step_two();
+if (!r2) {
+  rollback_step_one();
+  return r2;
 }
 ```
-- Never silently ignore a `false` return value from any method.
+
+- Store human-readable error descriptions directly in `Error::message()` — a separate `err_msg_` field is no longer needed.
+The message should explain the cause, not restate the error code:
+
+```cpp
+// Good
+return Err<void>(ErrorCode::OUT_OF_RANGE, "Index 42 is out of bounds for size 10");
+
+// Bad
+return Err<void>(ErrorCode::OUT_OF_RANGE, "out of range error");
+```
+
+- Methods that are not yet implemented should return `Err()`
+with no arguments — this automatically sets `ErrorCode::NOT_IMPLEMENTED`:
+
+```cpp
+Result<void> Player::sync_with_server() {
+  return Err(); // NOT_IMPLEMENTED
+}
+```
 
 ---
 
 ### Miscellaneous
-- Mark move constructors and move operators as `noexcept` if they genuinely cannot throw.  
-  This enables performance optimizations in standard containers:
+- Mark move constructors and move operators as `noexcept` if they genuinely cannot throw:
 ```cpp
 Player(Player&& other) noexcept;
 Player& operator=(Player&& other) noexcept;
@@ -394,8 +453,11 @@ if (speed == target_speed) { ... }
 #pragma once
 
 #include "common/common.h"
+#include "common/result.h"
+
 
 namespace game {
+
 
 class Player {
  private:
@@ -429,11 +491,12 @@ class Player {
   void set_score(i32 value);
 
   // Domain methods
-  bool add_score(i32 amount);
-  void reset();
+  Result<void> add_score(i32 amount);
+  Result<void> reset();
 
   friend std::ostream& operator<<(std::ostream& os, const Player& p);
 };
+
 
 } // namespace game
 ```
@@ -443,7 +506,9 @@ class Player {
 // player.cpp
 #include "player.h"
 
+
 namespace game {
+
 
 // =====Constructors
 Player::Player() noexcept
@@ -505,14 +570,17 @@ void Player::set_name(string value) { name_ = value; }
 void Player::set_score(i32 value) { score_ = value; }
 
 // =====Domain methods
-bool Player::add_score(i32 amount) {
-  if (amount <= 0) return false;
+Result<void> Player::add_score(i32 amount) {
+  if (amount <= 0) {
+    return Err(ErrorCode::INVALID_ARGUMENT, "Amount must be positive");
+  }
   score_ += amount;
-  return true;
+  return Ok();
 }
 
-void Player::reset() {
+Result<void> Player::reset() {
   score_ = 0;
+  return Ok();
 }
 
 // =====Output op
@@ -520,6 +588,7 @@ std::ostream& operator<<(std::ostream& os, const Player& p) {
   os << "Player \"" << p.name_ << "\", id: " << p.id_ << ", score: " << p.score_;
   return os;
 }
+
 
 } // namespace game
 ```

@@ -33,6 +33,7 @@ set(SOURCES
   "${SRC_DIR}/common/enums.h"
   "${SRC_DIR}/common/math.h"
   "${SRC_DIR}/common/time.h"
+  "${SRC_DIR}/common/resident.h"
   "${SRC_DIR}/common/common.h"
 
   "${SRC_DIR}/array/array.h"
@@ -43,7 +44,7 @@ set(SOURCES
 
   "${SRC_DIR}/headers.h"
   "${SRC_DIR}/Source.cpp"
- "src/common/resident.h")
+)
 
 
 add_executable (DSTR ${SOURCES})
@@ -57,31 +58,3 @@ target_include_directories(DSTR PRIVATE ${SRC_DIR})
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET DSTR PROPERTY CXX_STANDARD 20)
 endif()
-
-
-# --- GoogleTest ---
-include(FetchContent)
-set(GOOGLE_TEST_VERSION "v1.17.0")
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG ${GOOGLE_TEST_VERSION}
-)
-# For Windows to prevent MSVC runtime conflicts
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-
-
-enable_testing()  # Turn on the CTest
-
-# --- Add test files here ---
-add_executable(DSTRTest
-    )
-
-target_link_libraries(DSTRTest 
-  GTest::gtest_main 
-  nlohmann_json::nlohmann_json 
-)
-
-include(GoogleTest)
-gtest_discover_tests(DSTRTest)

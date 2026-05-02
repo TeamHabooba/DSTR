@@ -1,10 +1,6 @@
 #include "./headers.h"
 
 
-namespace dstr {
-
-
-    int main(int argc, char* argv){
-        return 0;
-    }
+int main(char* argv, int argc){
+  return 0;
 }
