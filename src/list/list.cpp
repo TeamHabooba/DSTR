@@ -1,35 +1,37 @@
 //list.cpp
+#pragma once
+
+
 #include "list.h"
-#include <iostream>
+
 
 namespace dstr {
 
+
   // node
   template <typename T>
-  list<T>::Node::Node(const T& value)
+  List<T>::Node::Node(const T& value)
     : data(value), next(nullptr) {
   }
 
   // list
   template <typename T>
-  list<T>::list() : head(nullptr) {}
+  List<T>::List() : head(nullptr) {}
 
   template <typename T>
-  list<T>::~list() {
+  List<T>::~List() {
     // No manual delete needed (smart pointers handle it)
   }
 
-  // insert
   template <typename T>
-  void list<T>::insert(const T& value) {
+  void List<T>::insert(const T& value) {
     sp<Node> newNode = std::make_shared<Node>(value);
     newNode->next = head;
     head = newNode;
   }
 
-  // display
   template <typename T>
-  void list<T>::display() const {
+  void List<T>::display() const {
     sp<Node> temp = head;
 
     while (temp != nullptr) {
@@ -38,9 +40,8 @@ namespace dstr {
       }
     }
 
-  // search
   template <typename T>
-  void list<T>::search(const T& value) const {
+  void List<T>::search(const T& value) const {
     sp<Node> temp = head;
 
     while (temp != nullptr) {
@@ -55,7 +56,7 @@ namespace dstr {
 
   // bubblesort
   template <typename T>
-  void list<T>::sort() {
+  void List<T>::sort() {
     if (!head) return;
 
     bool swapped;
@@ -76,10 +77,10 @@ namespace dstr {
       } while (swapped);
     }
 
-  // empty
   template <typename T>
-  bool list<T>::empty() const {
+  bool List<T>::empty() const {
     return head == nullptr;
   }
+
 
 } // namespace dstr

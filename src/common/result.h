@@ -8,6 +8,8 @@
 #include <variant>
 #include <utility>
 
+#include "strings.h"
+
 
 namespace dstr {
 
@@ -34,6 +36,10 @@ namespace dstr {
 
     Error(ErrorCode code, std::string message)
         : code_(code), message_(std::move(message)) {
+    }
+
+    Error(ErrorCode code, string_const message)
+        : code_(code), message_(message) {
     }
 
     constexpr ErrorCode code() const noexcept { return code_; }
@@ -151,11 +157,11 @@ namespace dstr {
 
   template<typename T>
   Result<T> Err() {
-    return Result<T>(Error(ErrorCode::NOT_IMPLEMENTED, "This method or class is yet to be implemented."));
+    return Result<T>(Error(ErrorCode::NOT_IMPLEMENTED, strings::ERR_MSG_NOT_IMPLEMENTED));
   }
 
   inline Result<void> Err() {
-    return Result<void>(Error(ErrorCode::NOT_IMPLEMENTED, "This method or class is yet to be implemented."));
+    return Result<void>(Error(ErrorCode::NOT_IMPLEMENTED, strings::ERR_MSG_NOT_IMPLEMENTED));
   }
 
 
