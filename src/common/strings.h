@@ -12,3 +12,9 @@ using string_const = const char*;
 #endif
 
 
+namespace dstr::strings {
+  string_const HELLO_MSG = "Welcome!";
+
+  string_const ERR_MSG_GENERAL = "Error occured: ";
+  string_const ERR_MSG_NOT_IMPLEMENTED = "This method or class is yet to be implemented.";
+}
