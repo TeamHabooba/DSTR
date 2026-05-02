@@ -52,4 +52,4 @@ namespace dstr {
   using lid_t = uint64_t;
 
 
-} // namespace dstr
+} // namespace dSCSTR

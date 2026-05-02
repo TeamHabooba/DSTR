@@ -27,22 +27,9 @@ set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 
 # All executables as a list
 set(SOURCES
-  "${SRC_DIR}/common/cpp_version.h"
-  "${SRC_DIR}/common/strings.h"
-  "${SRC_DIR}/common/aliases.h"
-  "${SRC_DIR}/common/enums.h"
-  "${SRC_DIR}/common/math.h"
-  "${SRC_DIR}/common/time.h"
-  "${SRC_DIR}/common/resident.h"
-  "${SRC_DIR}/common/common.h"
-
-  "${SRC_DIR}/array/array.h"
+  "${SRC_DIR}/list/list.cpp"
   "${SRC_DIR}/array/array.cpp"
 
-  "${SRC_DIR}/list/list.h"
-  "${SRC_DIR}/list/list.cpp"
-
-  "${SRC_DIR}/headers.h"
   "${SRC_DIR}/Source.cpp"
 )
 

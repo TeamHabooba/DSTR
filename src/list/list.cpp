@@ -1,7 +1,8 @@
 //list.cpp
 #pragma once
 
-
+#include <memory>
+#include <iostream>
 #include "list.h"
 
 

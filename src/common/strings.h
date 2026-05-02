@@ -5,16 +5,18 @@
 #include "./cpp_version.h"
 
 
+// NOTE: dangerous macro usage. Fix later.
 #if CPP_VERSION >= 17
-using string_const = std::string_view;
+#define CSTR constexpr std::string_view
+#define SCSTR static constexpr std::string_view
 #else
-using string_const = const char*;
+#define CSTR const char*
 #endif
 
 
 namespace dstr::strings {
-  string_const HELLO_MSG = "Welcome!";
+  SCSTR HELLO_MSG = "Welcome!";
 
-  string_const ERR_MSG_GENERAL = "Error occured: ";
-  string_const ERR_MSG_NOT_IMPLEMENTED = "This method or class is yet to be implemented.";
+  SCSTR ERR_MSG_GENERAL = "Error occured: ";
+  SCSTR ERR_MSG_NOT_IMPLEMENTED = "This method or class is yet to be implemented.";
 }
