@@ -28,4 +28,5 @@
 #include "./time.h"
 #endif
 
+// Dangerous using. Remove later.
 using namespace std::string_literals;
