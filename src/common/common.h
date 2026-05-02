@@ -17,10 +17,11 @@
 #include "nlohmann/json.hpp"
 
 // Project Headers
+#include "./strings.h"
 #include "./aliases.h"
 #include "./math.h"             // <cmath>
 #include "./enums.h"            // "./aliases.h" <- {<optional>, <memory>, "./strings.h"}
-#include "./strings.h"
+#include "./string_helpers.h"
 //#include "./time.h"             // {<ctime>, <string>, <sstream>, <iomanip>, "./aliases.h" <- {<cstdint>, <optional>, <memory>, <chrono>}
 #include "./result.h"
 
