@@ -17,10 +17,6 @@ Group 32
 > Leon Frank Aminiel
 - #### TP082459
 > Mohamed Abdifatah Ali
-- #### TP076354
-> Said Abdullahi Ali
-- #### TP080562
-> Saleh Khaled Nasser Yaslam
 
 ## Task Division
 
@@ -32,7 +28,7 @@ This assignment would be completed in subgroups.
 - implementing basic and helper classes (e.g. `Resident`) and other project-wide types (classes, enums, structs, etc.), including the ones used for time, date, maths,
 - CLI (Command-Line Interface) basics
 
-2 (TWO) people implement the *array* part, that includes all of the following:
+1 (ONE) person implement the *array* part, that includes all of the following:
 - data structure implementation,
 - sort algorithms: bubble sort, insertion sort, quick sort. More might be added later,
 - search algorithms: linear (brute-force), binary, jump. More might be added later,
@@ -40,7 +36,7 @@ This assignment would be completed in subgroups.
 - insert/delete API,
 - analysis API: additional helper methods to compare time & memory used by different algorithms.
 
-2 (TWO) people implement the *list* part, that includes all of the following:
+1 (ONE) person implement the *list* part, that includes all of the following:
 - data structure implementation,
 - sort algorithms: bubble sort, insertion sort, quick sort. More might be added later,
 - search algorithms: linear (brute-force), binary, exponential. More might be added later,
@@ -52,8 +48,8 @@ All requirements for implementations are mentioned [here](doc/code-reqs.md).
 
 ### Assignees
 *General* functionality - [Alex](#tp081705)  
-*Array* Implementation -  [Moha](#tp082459) & [Said](#tp076354)  
-*List* Implementation - [Leo](#tp082557) & [Saleh](#tp080562)  
+*Array* Implementation -  [Moha](#tp082459)   
+*List* Implementation - [Leo](#tp082557)   
 
 *No Task Assigned* -  *---*
 
