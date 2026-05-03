@@ -1,36 +1,46 @@
-//list.h
+// list.h
 #pragma once
 
-
-#include "../common/common.h" 
-
+#include <vector>
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include "../common/common.h"
 
 namespace dstr {
 
-  template <typename T>
-  class List {
+    template <typename T>
+    class List {
     private:
-    struct Node {
-      T data;
-      sp<Node> next;
+        struct Node {
+            T data;
+            std::vector<Node*> forward;
 
-      Node(const T& value);
-    };
+            Node(const T& value, int level);
+        };
 
-    sp<Node> head;
+        static constexpr int   MAX_LEVEL = 16;
+        static constexpr float PROB = 0.5f;
+
+        Node* head_;
+        int   currentLevel_;
+
+        int                randomLevel();
+        std::vector<Node*> findUpdate(const T& value);
 
     public:
-      List();
-      ~List();
+        List();
+        ~List();
 
-    // Basic operations
-    void insert(const T& value);
-    void display() const;
-    void search(const T& value) const;
-    void sort();
-    bool empty() const;
+        void insert(const T& value);
+        void display()  const;
+        void search(const T& value) const;
+        bool remove(const T& value);
+        void sort();
+        bool empty() const;
     };
-
 
 } // namespace dstr
 
+// Implementation — must be visible to every translation unit that uses List<T>
+#include "list.inl"
