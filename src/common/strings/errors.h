@@ -21,6 +21,7 @@ namespace dstr::strings {
   SCSTR ERR_FILE_EMPTY = "File is empty: ";
   SCSTR ERR_FILE_NO_RECORDS = "No valid records found in file: ";
 
+  SCSTR ERR_LINE = "Line ";
   SCSTR ERR_LINE_MISSING_RID = ": missing ResidentID.";
   SCSTR ERR_LINE_INVALID_RID = ": invalid ResidentID value.";
   SCSTR ERR_LINE_MISSING_AGE = ": missing Age.";

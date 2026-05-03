@@ -20,7 +20,7 @@ namespace dstr {
     i32 line_number = 0;
     // Skip header
     if (!std::getline(file, line)) {
-      return Err<Array<Resident>>(ErrorCode::IO_ERROR,string(strings::ERR_FILE_EMPTY) + path);
+      return Err<Array<Resident>>(ErrorCode::IO_ERROR, string(strings::ERR_FILE_EMPTY) + path);
     }
     while (std::getline(file, line)) {
       line_number++;
@@ -52,59 +52,59 @@ namespace dstr {
     Resident r;
     // Column 0: ResidentID
     if (!std::getline(ss, token, ',')) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_RID));
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_RID));
     }
     r.id = token;
     r.city = parse_city_from_id(token);
     // Column 1: Age
     if (!std::getline(ss, token, ',')) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_CEF));
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_CEF));
     }
     try {
       r.age = std::stoi(token);
     }
     catch (...) {
       return Err<Resident>(
-        ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_CEF));
+        ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_CEF));
     }
     // Column 2: ModeOfTransport
     if (!std::getline(ss, token, ',')) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_MOT));
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_MOT));
     }
     auto transport_result = parse_transport(token);
     if (!transport_result) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + ": " + transport_result.error().message());
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + ": " + transport_result.error().message());
     }
     r.transport = transport_result.value();
     // Column 3: DailyDistance (km)
     if (!std::getline(ss, token, ',')) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_DD));
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_DD));
     }
     try {
       r.daily_distance_km = std::stoi(token);
     }
     catch (...) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_DD));
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_DD));
     }
     // Column 4: CarbonEmissionFactor
     if (!std::getline(ss, token, ',')) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_CEF));
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_CEF));
     }
     try {
       r.carbon_emission_factor = std::stof(token);
     }
     catch (...) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_CEF));
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_CEF));
     }
     // Column 5: AvgDaysPerMonth
     if (!std::getline(ss, token, ',')) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_ADM));
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_ADM));
     }
     try {
       r.avg_days_per_month = std::stoi(token);
     }
     catch (...) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, "Line " + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_CEF));
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_CEF));
     }
     return Ok(r);
   }
