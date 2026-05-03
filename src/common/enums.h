@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./aliases.h"
+#include "./string_helpers.h"
 
 
 namespace dstr {
@@ -13,7 +14,7 @@ namespace dstr {
 		WALKING,
 		CARPOOL,
 		SCHOOL_BUS,
-
+		UNKNOWN
 	};
 
 	enum class City {
@@ -40,6 +41,41 @@ namespace dstr {
 		if (letter == 'B') { return City::CITY_B; }
 		if (letter == 'C') { return City::CITY_C; }
 		return City::UNKNOWN;
+	}
+
+	static ModeOfTransport parse_transport(const string& s) {
+		string cleaned;
+		cleaned.reserve(s.size());
+		for (char c : s) {
+			if (c != '\r' && c != '\n' && c != '"') {
+				cleaned += static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+			}
+		}
+		cleaned = trim(cleaned);
+		if (cleaned.empty()) {
+			return ModeOfTransport::UNKNOWN;
+			//return Err<ModeOfTransport>(ErrorCode::INVALID_ARGUMENT, "Empty transport token");
+		}
+		if (cleaned == "car") {
+			return ModeOfTransport::CAR;
+		}
+		if (cleaned == "bus") {
+			return ModeOfTransport::BUS;
+		}
+		if (cleaned == "bicycle") {
+			return ModeOfTransport::BICYCLE;
+		}
+		if (cleaned == "walking") {
+			return ModeOfTransport::WALKING;
+		}
+		if (cleaned == "carpool") {
+			return ModeOfTransport::CARPOOL;
+		}
+		if (cleaned == "school bus" || cleaned == "schoolbus" || cleaned == "school_bus") {
+			return ModeOfTransport::SCHOOL_BUS;
+		}
+		return ModeOfTransport::UNKNOWN;
+		//return Err<ModeOfTransport>(ErrorCode::INVALID_ARGUMENT, "Unknown transport mode: '" + s + "'");
 	}
 
 	static string transport_name(ModeOfTransport t) {
