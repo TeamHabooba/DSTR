@@ -110,39 +110,4 @@ namespace dstr {
   }
 
 
-  Result<ModeOfTransport> parse_transport(const string& s) {
-    // Trim and lowercase for comparison
-    string cleaned;
-    cleaned.reserve(s.size());
-    for (char c : s) {
-      if (c != '\r' && c != '\n' && c != '"') {
-        cleaned += static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
-      }
-    }
-    cleaned = trim(cleaned);
-    if (cleaned.empty()) {
-      return Err<ModeOfTransport>(ErrorCode::INVALID_ARGUMENT, "Empty transport token");
-    }
-    if (cleaned == "car") {
-      return Ok(ModeOfTransport::CAR);
-    }
-    if (cleaned == "bus") {
-      return Ok(ModeOfTransport::BUS);
-    }
-    if (cleaned == "bicycle") {
-      return Ok(ModeOfTransport::BICYCLE);
-    }
-    if (cleaned == "walking") {
-      return Ok(ModeOfTransport::WALKING);
-    }
-    if (cleaned == "carpool") {
-      return Ok(ModeOfTransport::CARPOOL);
-    }
-    if (cleaned == "school bus" || cleaned == "schoolbus" || cleaned == "school_bus") {
-      return Ok(ModeOfTransport::SCHOOL_BUS);
-    }
-    return Err<ModeOfTransport>(ErrorCode::INVALID_ARGUMENT, "Unknown transport mode: '" + s + "'");
-  }
-
-
 } // namespace dstr
