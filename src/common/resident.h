@@ -1,8 +1,7 @@
 #pragma once
 
 #include "./aliases.h"
-#include "./cpp_version.h"
-#include "./strings.h"
+#include "./strings/strings.h"
 #include "./enums.h"
 #include "./string_helpers.h"
 

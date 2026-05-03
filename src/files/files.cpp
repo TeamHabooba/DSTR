@@ -72,10 +72,10 @@ namespace dstr {
       return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_MOT));
     }
     auto transport_result = parse_transport(token);
-    if (!transport_result) {
-      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + ": " + transport_result.error().message());
+    if (transport_result == ModeOfTransport::UNKNOWN) {
+      return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_INVALID_MOT));
     }
-    r.transport = transport_result.value();
+    r.transport = transport_result;
     // Column 3: DailyDistance (km)
     if (!std::getline(ss, token, ',')) {
       return Err<Resident>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_LINE) + std::to_string(line_number) + string(strings::ERR_LINE_MISSING_DD));

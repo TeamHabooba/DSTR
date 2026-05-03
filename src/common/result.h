@@ -8,7 +8,7 @@
 #include <variant>
 #include <utility>
 
-#include "strings.h"
+#include "./strings/strings.h"
 
 
 namespace dstr {
