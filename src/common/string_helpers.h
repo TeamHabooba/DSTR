@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "./aliases.h"
-#include "./strings.h"
+#include "./strings/strings.h"
 
 
 using std::string;
