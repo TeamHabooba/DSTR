@@ -2,7 +2,8 @@
 #define DSTR_ARRAY_IMPLEMENTATION
 
 #ifndef DSTR_ARRAY_H_INCLUDED
-#include "Array.h"
+
+#include "array.h"
 #endif
 
 #include <cmath>
