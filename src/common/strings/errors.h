@@ -1,30 +1,11 @@
-// sТrings.h
+// errОrs.h
 #pragma once
 
 
-#include "./cpp_version.h"
-
-
-// NOTE: dangerous macro usage. Fix later.
-// CSTR = constant string value
-// SCSTR = static constant string value
-#if CPP_VERSION >= 17
-#define CSTR constexpr std::string_view
-#define SCSTR static constexpr std::string_view
-#else
-#define CSTR const char*
-#endif
+#include "./base.h"
 
 
 namespace dstr::strings {
-
-
-  SCSTR MSG_MAIN_MENU_INTRO = "Welcome!\nYou are in the main menu. Choose an option and press ENTER to interact with the program.";
-  SCSTR MSG_MAIN_MENU_OPTIONS = "1.Array implementation\n2.List implementation\n3.Credits\n0.Exit";
-  SCSTR MSG_DESC = "This is Data Structures (DSTR) assignment of group DSTR32.";
-  SCSTR MSG_DESC_MEMBERS = "Group members are:\nTP081705 - Kurapatkin Aliaksandr (Alex) (Leader)\nTP082557 - Leon Frank Aminiel (Leo)\nTP082459 - Mohamed Abdifatah Ali (Moha)";
-  SCSTR MSG_DESC_DOCS = "All the documentation can be found at our GitHub repository: https://github.com/TeamHabooba/DSTR";
-  SCSTR MSG_DESC_DOCS_FILES = "Refer to README.md file or docs directory.";
 
 
   SCSTR ERR_GENERAL = "Error occured: ";
@@ -52,11 +33,6 @@ namespace dstr::strings {
   SCSTR ERR_LINE_INVALID_CEF = ": invalid CarbonEmissionFactor value.";
   SCSTR ERR_LINE_MISSING_ADM = ": missing AvgDaysPerMonth.";
   SCSTR ERR_LINE_INVALID_ADM = ": invalid AvgDaysPerMonth value.";
-
-
-  SCSTR PATH_CITY_A = "data/city_a.csv";
-  SCSTR PATH_CITY_B = "data/city_b.csv";
-  SCSTR PATH_CITY_C = "data/city_c.csv";
 
 
 }

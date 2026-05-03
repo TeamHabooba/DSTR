@@ -17,7 +17,7 @@
 #include "nlohmann/json.hpp"
 
 // Project Headers
-#include "./strings.h"
+#include "./strings/strings.h"
 #include "./aliases.h"
 #include "./math.h"             // <cmath>
 #include "./enums.h"            // "./aliases.h" <- {<optional>, <memory>, "./strings.h"}
