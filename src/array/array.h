@@ -36,9 +36,11 @@ class Array {
   Array& operator=(Array&& other) noexcept;
 
   T& operator[](i32 index);
+
   const T& operator[](i32 index) const;
 
   T& get(i32 index);
+
   const T& get(i32 index) const;
 
   i32 size() const;
@@ -108,4 +110,4 @@ class Array {
 
 }
 
-#include "Array.cpp"
+#include "array.inl"
