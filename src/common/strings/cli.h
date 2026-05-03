@@ -8,27 +8,32 @@
 namespace dstr::strings {
 
 
+  SCSTR NL = "\n";
+
   SCSTR MSG_CONTINUE = "Press ENTER to continue...";
   SCSTR MSG_RETURN = "Press ENTER to return...";
   SCSTR MSG_BYE = "Goodbye!";
   SCSTR MSG_OPTION = "Option: ";
+  SCSTR MSG_INVALID_OPTION = "[!] Invalid option. Please choose among the options listed above.";
 
   SCSTR MSG_MAIN_MENU_INTRO = "Welcome!\nYou are in the main menu. Choose an option and press ENTER to interact with the program.";
   SCSTR MSG_MAIN_MENU_OPTIONS = "1.Array implementation\n2.List implementation\n3.Credits\n0.Exit";
 
   SCSTR MSG_ARR_MENU_HEADER = "Array Implementation";
-  SCSTR MSG_ARR_MENU_OPT_1 = "1. Load data from CSV files";
-  SCSTR MSG_ARR_MENU_OPT_2 = "2. Display all records";
-  SCSTR MSG_ARR_MENU_OPT_3 = "3. Carbon emission analysis";
-  SCSTR MSG_ARR_MENU_OPT_4 = "4. Age group analysis";
-  SCSTR MSG_ARR_MENU_OPT_5 = "5. Sort experiments";
-  SCSTR MSG_ARR_MENU_OPT_6 = "6. Search experiments";
-  SCSTR MSG_ARR_MENU_OPT_7 = "7. Performance analysis";
-  SCSTR MSG_ARR_MENU_OPT_0 = "0. Back to main menu";
+  SCSTR MSG_LIST_MENU_HEADER = "Linked List Implementation";
+  SCSTR MSG_SUB_MENU_OPT_1 = "1. Load data from CSV files";
+  SCSTR MSG_SUB_MENU_OPT_2 = "2. Display all records";
+  SCSTR MSG_SUB_MENU_OPT_3 = "3. Carbon emission analysis";
+  SCSTR MSG_SUB_MENU_OPT_4 = "4. Age group analysis";
+  SCSTR MSG_SUB_MENU_OPT_5 = "5. Sort experiments";
+  SCSTR MSG_SUB_MENU_OPT_6 = "6. Search experiments";
+  SCSTR MSG_SUB_MENU_OPT_7 = "7. Performance analysis";
+  SCSTR MSG_SUB_MENU_OPT_0 = "0. Back to main menu";
 
   SCSTR MSG_DATA_LOADED_BEG = "[Data loaded: ";
   SCSTR MSG_DATA_LOADED_END = " records]";
-  SCSTR MSG_DATA_NOT_LOADEDE = "[No data loaded — choose option 1 first]";
+  SCSTR MSG_DATA_NOT_LOADED = "[No data loaded — choose option 1 first]";
+  SCSTR MSG_DATA_NOT_LOADED_X = "[!] Load data first (option 1).";
 
   SCSTR MSG_DESC = "This is Data Structures (DSTR) assignment of group DSTR32.";
   SCSTR MSG_DESC_MEMBERS = "Group members are:\nTP081705 - Kurapatkin Aliaksandr (Alex) (Leader)\nTP082557 - Leon Frank Aminiel (Leo)\nTP082459 - Mohamed Abdifatah Ali (Moha)";
