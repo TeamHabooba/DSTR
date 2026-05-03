@@ -10,10 +10,10 @@ namespace dstr {
     : data(value), forward(level + 1, nullptr) {}
 
 
-  // ── List lifecycle ──────────────────────────────────────────────────────────
+  // ── Lifecycle ────────────────────────────────────────────────────────────────
 
   template <typename T>
-  List<T>::List() : currentLevel_(0) {
+  List<T>::List() : currentLevel_(0), size_(0) {
     std::srand(static_cast<unsigned>(std::time(nullptr)));
     head_ = new Node(T{}, MAX_LEVEL);
   }
@@ -29,7 +29,7 @@ namespace dstr {
   }
 
 
-  // ── Internal helpers ────────────────────────────────────────────────────────
+  // ── Internal helpers ─────────────────────────────────────────────────────────
 
   template <typename T>
   int List<T>::randomLevel() {
@@ -53,15 +53,14 @@ namespace dstr {
   }
 
 
-  // ── Public operations ───────────────────────────────────────────────────────
+  // ── Public operations ────────────────────────────────────────────────────────
 
   template <typename T>
   void List<T>::insert(const T& value) {
     auto update = findUpdate(value);
-
     Node* candidate = update[0]->forward[0];
     if (candidate && candidate->data == value)
-      return; // duplicate — skip
+      return; // duplicate
 
     int newLevel = randomLevel();
     if (newLevel > currentLevel_) {
@@ -75,6 +74,7 @@ namespace dstr {
       newNode->forward[i]   = update[i]->forward[i];
       update[i]->forward[i] = newNode;
     }
+    ++size_;
   }
 
   template <typename T>
@@ -92,7 +92,6 @@ namespace dstr {
     for (int i = currentLevel_; i >= 0; --i)
       while (cur->forward[i] && cur->forward[i]->data < value)
         cur = cur->forward[i];
-
     cur = cur->forward[0];
     if (cur && cur->data == value)
       std::cout << "Found: " << cur->data << "\n";
@@ -101,31 +100,55 @@ namespace dstr {
   }
 
   template <typename T>
+  const T* List<T>::find(const T& value) const {
+    Node* cur = head_;
+    for (int i = currentLevel_; i >= 0; --i)
+      while (cur->forward[i] && cur->forward[i]->data < value)
+        cur = cur->forward[i];
+    cur = cur->forward[0];
+    if (cur && cur->data == value)
+      return &cur->data;
+    return nullptr;
+  }
+
+  template <typename T>
   bool List<T>::remove(const T& value) {
     auto update = findUpdate(value);
-
     Node* target = update[0]->forward[0];
     if (!target || target->data != value)
       return false;
-
     for (int i = 0; i <= currentLevel_; ++i) {
       if (update[i]->forward[i] != target) break;
       update[i]->forward[i] = target->forward[i];
     }
     delete target;
-
+    --size_;
     while (currentLevel_ > 0 && !head_->forward[currentLevel_])
       --currentLevel_;
-
     return true;
   }
 
   template <typename T>
-  void List<T>::sort() {}
+  void List<T>::sort() {}  // always sorted on insert
 
   template <typename T>
   bool List<T>::empty() const {
-    return head_->forward[0] == nullptr;
+    return size_ == 0;
+  }
+
+  template <typename T>
+  int List<T>::size() const {
+    return size_;
+  }
+
+  template <typename T>
+  template <typename Visitor>
+  void List<T>::for_each(Visitor fn) const {
+    Node* cur = head_->forward[0];
+    while (cur) {
+      fn(cur->data);
+      cur = cur->forward[0];
+    }
   }
 
 } // namespace dstr
