@@ -296,18 +296,9 @@ namespace dstr {
     return Result<void>();
   }
   // ============================================================
-  // List menu functions — paste these into cli.cpp,
-  // replacing the existing empty stub implementations.
-  // All strings come from dstr::strings (src/common/strings/list.h).
+  // List menu functions
   // ============================================================
 
-  // Required extra includes at the top of cli.cpp (add if not present):
-  //   #include <map>
-  //   #include <algorithm>
-  //   #include <numeric>
-  //   #include <chrono>
-  //   #include <iomanip>
-  //   #include "../common/strings/list.h"
 
   using namespace std::chrono;
   using dstr::strings::NL;
@@ -346,7 +337,7 @@ namespace dstr {
   }
 
 
-  // ── 2. Display table ──────────────────────────────────────────────────────────
+  //  2. Display table
 
   Result<void> dstr::list_display_table(const List<Resident>& records) {
       std::cout << NL << strings::LIST_TABLE_HEADER << NL;
@@ -369,7 +360,7 @@ namespace dstr {
   }
 
 
-  // ── 3. Carbon emission analysis ───────────────────────────────────────────────
+  //  3. Carbon emission analysis
 
   Result<void> dstr::list_carbon_analysis(const List<Resident>& records) {
       std::cout << NL << strings::LIST_CARBON_HEADER << NL << NL;
@@ -445,7 +436,7 @@ namespace dstr {
   }
 
 
-  // ── 4. Age group analysis ─────────────────────────────────────────────────────
+  //  4. Age group analysis 
 
   Result<void> dstr::list_age_group_analysis(const List<Resident>& records) {
       std::cout << NL << strings::LIST_AGE_HEADER << NL << NL;
@@ -488,7 +479,7 @@ namespace dstr {
   }
 
 
-  // ── 5. Sort experiments ───────────────────────────────────────────────────────
+  //  5. Sort experiments 
 
   Result<void> dstr::list_sort_menu(List<Resident>& records) {
       std::cout << NL << strings::LIST_SORT_HEADER << NL;
@@ -521,7 +512,7 @@ namespace dstr {
   }
 
 
-  // ── 6. Search experiments ─────────────────────────────────────────────────────
+  //  6. Search experiments 
 
   Result<void> dstr::list_search_menu(const List<Resident>& records) {
       std::cout << NL << strings::LIST_SEARCH_HEADER << NL;
@@ -572,12 +563,12 @@ namespace dstr {
   }
 
 
-  // ── 7. Performance analysis ───────────────────────────────────────────────────
+  //  7. Performance analysis 
 
   Result<void> dstr::list_performance_menu(List<Resident>& records) {
       std::cout << NL << strings::LIST_PERF_HEADER << NL << NL;
 
-      // ── Insert benchmark: rebuild list from scratch and time it
+      //  Insert benchmark: rebuild list from scratch and time it
       std::vector<Resident> snapshot;
       snapshot.reserve(records.size());
       records.for_each([&](const Resident& r) { snapshot.push_back(r); });
@@ -589,7 +580,7 @@ namespace dstr {
       auto t1 = high_resolution_clock::now();
       long long t_insert = duration_cast<microseconds>(t1 - t0).count();
 
-      // ── Search benchmark: search for the middle element by emission order
+      //  Search benchmark: search for the middle element by emission order
       long long t_search = 0;
       if (!snapshot.empty()) {
           // snapshot is unsorted; pick one that exists in the list
@@ -600,14 +591,14 @@ namespace dstr {
           t_search = duration_cast<microseconds>(s1 - s0).count();
       }
 
-      // ── Traversal benchmark
+      //  Traversal benchmark
       auto v0 = high_resolution_clock::now();
       volatile int dummy = 0;
       records.for_each([&](const Resident&) { ++dummy; });
       auto v1 = high_resolution_clock::now();
       long long t_traverse = duration_cast<microseconds>(v1 - v0).count();
 
-      // ── Memory estimate: per node ~ sizeof(T) + sizeof(vector header) + avg 2 pointers per node
+      //  Memory estimate: per node ~ sizeof(T) + sizeof(vector header) + avg 2 pointers per node
       // avg levels ≈ 2 for p=0.5, so ~2 forward pointers per node
       size_t node_size = sizeof(Resident)
           + sizeof(std::vector<void*>)    // forward vector header
@@ -615,7 +606,7 @@ namespace dstr {
       size_t mem_est = node_size * static_cast<size_t>(records.size())
           + sizeof(List<Resident>);
 
-      // ── Print results
+      //  Print results
       std::cout << strings::LIST_PERF_COUNT_BEG << records.size() << NL;
       std::cout << strings::LIST_PERF_INSERT_BEG << t_insert << strings::LIST_PERF_INSERT_END << NL;
       std::cout << strings::LIST_PERF_SEARCH_BEG << t_search << strings::LIST_PERF_SEARCH_END << NL;
