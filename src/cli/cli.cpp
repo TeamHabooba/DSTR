@@ -8,6 +8,7 @@
 #include <string>
 #include "../common/strings/array.h"
 #include "../common/strings/list.h"
+#include "./app_state.h"
 
 using std::getline;
 using std::string;
@@ -73,6 +74,9 @@ namespace dstr {
       }
       case 3:
         goto_creds(is, os);
+        break;
+      default:
+        os << NL << strings::MSG_INVALID_OPTION << NL << NL;
         break;
       }
       first_run = false;
