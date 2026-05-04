@@ -341,33 +341,28 @@ namespace dstr {
           int idx = 1;
           records.for_each([&](const Resident& r) {
               std::cout << "[" << std::setw(4) << idx++ << "] " << r << NL;
-              });
+            });
       }
       os << strings::LIST_TABLE_DIVIDER << NL << NL;
       os << strings::MSG_RETURN;
-      
       await_return(std::cin);
       return Ok();
   }
 
-
-  //  3. Carbon emission analysis
-
+  // Carbon emission analysis
+  // TODO: remove std::map usage and std::vector usage
   Result<void> dstr::list_carbon_analysis(std::istream& is, std::ostream& os, const List<Resident>& records) {
       std::cout << NL << strings::LIST_CARBON_HEADER << NL << NL;
-
       // Accumulate per transport mode
       std::map<ModeOfTransport, float> sum_by_transport;
       std::map<ModeOfTransport, int>   count_by_transport;
       float total = 0.0f;
-
       records.for_each([&](const Resident& r) {
           float e = r.monthly_emission();
           sum_by_transport[r.transport] += e;
           count_by_transport[r.transport]++;
           total += e;
           });
-
       // Average per transport mode
       std::cout << strings::LIST_CARBON_TRANSPORT_HDR << NL;
       std::cout << std::left
@@ -375,7 +370,6 @@ namespace dstr {
           << std::setw(10) << "Count"
           << std::setw(20) << "Avg Emission (kg CO2)" << NL;
       std::cout << std::string(50, '-') << NL;
-
       for (auto& [mode, sum] : sum_by_transport) {
           int cnt = count_by_transport[mode];
           std::cout << std::left
@@ -394,24 +388,19 @@ namespace dstr {
                   << std::setw(20) << std::fixed << std::setprecision(2)
                   << (cnt > 0 ? sum / cnt : 0.0f) << NL;
       }
-
       std::cout << NL;
-
       // Top 5 highest emitters — collect into vector, partial sort
       std::vector<Resident> all;
       all.reserve(records.size());
       records.for_each([&](const Resident& r) { all.push_back(r); });
-
       int top_n = std::min(5, static_cast<int>(all.size()));
       std::partial_sort(all.begin(), all.begin() + top_n, all.end(),
           [](const Resident& a, const Resident& b) {
               return a.monthly_emission() > b.monthly_emission();
           });
-
       std::cout << strings::LIST_CARBON_TOP_HDR << NL;
       for (int i = 0; i < top_n; ++i)
           std::cout << "  " << (i + 1) << ". " << all[i] << NL;
-
       std::cout << NL;
       std::cout << strings::LIST_CARBON_TOTAL
           << std::fixed << std::setprecision(2) << total
@@ -420,57 +409,41 @@ namespace dstr {
           << std::fixed << std::setprecision(2)
           << (records.size() > 0 ? total / records.size() : 0.0f)
           << strings::LIST_CARBON_UNIT << NL << NL;
-
       std::cout << strings::MSG_RETURN;
       std::cin.ignore();
       return Ok();
   }
 
-
-  //  4. Age group analysis 
-
+  // Age group analysis
+  // TODO: remove std::map usage
   Result<void> dstr::list_age_group_analysis(std::istream& is, std::ostream& os, const List<Resident>& records) {
-      std::cout << NL << strings::LIST_AGE_HEADER << NL << NL;
-
-      std::map<AgeGroup, float> sum_by_group;
-      std::map<AgeGroup, int>   count_by_group;
-
-      records.for_each([&](const Resident& r) {
-          sum_by_group[r.age_group()] += r.monthly_emission();
-          count_by_group[r.age_group()]++;
-          });
-
-      std::cout << std::left
-          << std::setw(26) << strings::LIST_AGE_GROUP_COL
-          << std::setw(10) << strings::LIST_AGE_COUNT_COL
-          << strings::LIST_AGE_AVG_COL << NL;
-      std::cout << std::string(58, '-') << NL;
-
-      for (auto& [group, sum] : sum_by_group) {
-          int cnt = count_by_group[group];
-          std::cout << std::left
-              << std::setw(26) << [&]() -> std::string_view {
-              switch (group) {
-              case AgeGroup::CHILDREN_TEENAGERS:   return "Children/Teenagers";
-              case AgeGroup::YOUNG_ADULTS:         return "Young Adults";
-              case AgeGroup::WORKING_ADULTS_EARLY: return "Working Adults (26-45)";
-              case AgeGroup::WORKING_ADULTS_LATE:  return "Working Adults (46-60)";
-              case AgeGroup::SENIOR_CITIZENS:      return "Senior Citizens";
-              default:                             return "Unknown";
-              }
-              }()
-                  << std::setw(10) << cnt
-                  << std::fixed << std::setprecision(2)
-                  << (cnt > 0 ? sum / cnt : 0.0f) << NL;
-      }
-
-      std::cout << NL << strings::MSG_RETURN;
-      std::cin.ignore();
-      return Ok();
+    os << NL << strings::LIST_AGE_HEADER << NL << NL;
+    std::map<AgeGroup, float> sum_by_group;
+    std::map<AgeGroup, int>   count_by_group;
+    records.for_each([&](const Resident& r) {
+      sum_by_group[r.age_group()] += r.monthly_emission();
+      count_by_group[r.age_group()]++;
+      });
+    os << std::left;
+    os << std::setw(26) << strings::LIST_AGE_GROUP_COL;
+    os << std::setw(10) << strings::LIST_AGE_COUNT_COL;
+    os << strings::LIST_AGE_AVG_COL << NL;
+    print_separator(os, '-', 58);
+    os << NL;
+    for (auto& [group, sum] : sum_by_group) {
+        int cnt = count_by_group[group];
+        os << std::left;
+        os << std::setw(26) << age_group_name(group);
+        os << std::setw(10) << cnt;
+        os << std::fixed << std::setprecision(2);
+        os << (cnt > 0 ? sum / cnt : 0.0f) << NL;
+    }
+    os << NL << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
   }
 
-
-  //  Sort experiments 
+  // Sort experiments 
   Result<void> dstr::list_sort_menu(std::istream& is, std::ostream& os, List<Resident>& records) {
     using namespace std::chrono;
     os << NL << strings::LIST_SORT_HEADER << NL;
@@ -498,7 +471,8 @@ namespace dstr {
     return Ok();
   }
 
-  // Search experiments 
+  // Search experiments
+  // TODO: 
   Result<void> dstr::list_search_menu(std::istream& is, std::ostream& os, const List<Resident>& records) {
     using namespace std::chrono;
     os << NL << strings::LIST_SEARCH_HEADER << NL;
@@ -543,7 +517,8 @@ namespace dstr {
     return Ok();
   }
 
-  // Performance analysis 
+  // Performance analysis
+  // TODO: remove std::vector<> usage
   Result<void> dstr::list_performance_menu(std::istream& is, std::ostream& os, List<Resident>& records) {
     using namespace std::chrono;
     os << NL << strings::LIST_PERF_HEADER << NL << NL;
