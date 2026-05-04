@@ -1,7 +1,6 @@
 // list.h
 #pragma once
 
-#include <vector>
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -13,21 +12,25 @@ namespace dstr {
   class List {
   private:
     struct Node {
-      T data;
-      std::vector<Node*> forward;
+      T     data;
+      Node* forward[17]; // fixed array: indices 0..MAX_LEVEL (16)
+      i32   level;       // highest lane index this node participates in
 
-      Node(const T& value, int level);
+      Node(const T& value, i32 lvl);
     };
 
-    static constexpr int   MAX_LEVEL = 16;
+    static constexpr i32   MAX_LEVEL = 16;
     static constexpr float PROB      = 0.5f;
 
-    Node* head_;
-    int   currentLevel_;
-    int   size_;
+    up<Node> head_;        // sentinel: never holds real data
+    i32      currentLevel_;
+    i32      size_;
 
-    int                randomLevel();
-    std::vector<Node*> findUpdate(const T& value);
+    i32  randomLevel();
+
+    // Fills update[0..currentLevel_] with the rightmost node at each level
+    // whose next pointer has not yet passed `value`. Caller provides the array.
+    void findUpdate(const T& value, Node* update[]) const;
 
   public:
     List();
@@ -40,7 +43,7 @@ namespace dstr {
     bool remove(const T& value);
     void sort();        // no-op: always sorted on insert
     bool empty() const;
-    int  size()  const;
+    i32  size()  const;
 
     // Calls fn(element) for every node in sorted order
     template <typename Visitor>
