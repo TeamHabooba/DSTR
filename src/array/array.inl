@@ -1,9 +1,5 @@
 // Array.inl
-#pragma once
-
-#ifndef DSTR_ARRAY_H_INCLUDED
 #include "array.h"
-#endif
 
 #include <cmath>
 #include <utility>
@@ -94,7 +90,7 @@ namespace dstr {
   template <typename T>
   Result<T> Array<T>::operator[](i32 index) {
     if (index < 0 || index >= size_) {
-      return Err<T>(ErrorCode::OUT_OF_RANGE, strings::ERR_INVALID_ARGUMENT);
+      return Err<T>(ErrorCode::OUT_OF_RANGE, string(strings::ERR_INVALID_ARGUMENT));
     }
     return Ok(data_[index]);
   }
@@ -102,7 +98,7 @@ namespace dstr {
   template <typename T>
   Result<const T> Array<T>::operator[](i32 index) const {
     if (index < 0 || index >= size_) {
-      return Err<const T>(ErrorCode::OUT_OF_RANGE, strings::ERR_INVALID_ARGUMENT);
+      return Err<const T>(ErrorCode::OUT_OF_RANGE, string(strings::ERR_INVALID_ARGUMENT));
     }
     return Ok<const T>(data_[index]);
   }
@@ -146,7 +142,7 @@ namespace dstr {
   template <typename T>
   Result<void> Array<T>::insert(i32 index, const T& value) {
     if (index < 0 || index > size_) {
-      return Err(ErrorCode::OUT_OF_RANGE, strings::ERR_INVALID_ARGUMENT);
+      return Err(ErrorCode::OUT_OF_RANGE, string(strings::ERR_INVALID_ARGUMENT));
     }
     if (size_ == capacity_) {
       grow();
@@ -162,7 +158,7 @@ namespace dstr {
   template <typename T>
   Result<void> Array<T>::update(i32 index, const T& value) {
     if (index < 0 || index >= size_) {
-      return Err(ErrorCode::OUT_OF_RANGE, strings::ERR_INVALID_ARGUMENT);
+      return Err(ErrorCode::OUT_OF_RANGE, string(strings::ERR_INVALID_ARGUMENT));
     }
     data_[index] = value;
     return Ok();
@@ -171,7 +167,7 @@ namespace dstr {
   template <typename T>
   Result<void> Array<T>::pop_back() {
     if (size_ == 0) {
-      return Err(ErrorCode::EMPTY_CONTAINER, strings::ERR_INVALID_ARGUMENT);
+      return Err(ErrorCode::EMPTY_CONTAINER, string(strings::ERR_INVALID_ARGUMENT));
     }
     size_--;
     return Ok();
@@ -180,7 +176,7 @@ namespace dstr {
   template <typename T>
   Result<void> Array<T>::remove(i32 index) {
     if (index < 0 || index >= size_) {
-      return Err(ErrorCode::OUT_OF_RANGE, strings::ERR_INVALID_ARGUMENT);
+      return Err(ErrorCode::OUT_OF_RANGE, string(strings::ERR_INVALID_ARGUMENT));
     }
     for (i32 i = index; i < size_ - 1; i++) {
       data_[i] = data_[i + 1];

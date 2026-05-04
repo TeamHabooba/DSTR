@@ -5,6 +5,7 @@
 #include "../array/array.h"
 #include "../list/list.h"
 #include "../files/files.h"
+#include "./app_state.h"
 
 
 namespace dstr {
@@ -17,36 +18,35 @@ namespace dstr {
 
   // Entry point
 
-  Result<void> cli_start(std::istream& is, std::ostream& os, char* argv, int argc);
+  Result<void> cli_start(char* argv, int argc, AppState& state);
 
 
   // Top-level menus
 
-  Result<void> goto_array_menu(std::istream& is, std::ostream& os, Array<Resident>& records, bool& loaded);
-  Result<void> goto_list_menu(std::istream& is, std::ostream& os, List<Resident>& records, bool& loaded);
-  Result<void> goto_creds(std::istream& is, std::ostream& os);
+  Result<void> goto_array_menu(AppState& state);
+  Result<void> goto_list_menu(AppState& state);
+  Result<void> goto_creds(AppState& state);
 
 
   // Array sub-menu actions
 
-  Result<void> array_load_data(std::istream& is, std::ostream& os, Array<Resident>& records);
-  Result<void> array_display_table(std::istream& is, std::ostream& os, const Array<Resident>& records);
-  Result<void> array_carbon_analysis(std::istream& is, std::ostream& os, const Array<Resident>& records);
-  Result<void> array_age_group_analysis(std::istream& is, std::ostream& os, const Array<Resident>& records);
-  Result<void> array_sort_menu(std::istream& is, std::ostream& os, Array<Resident>& records);
-  Result<void> array_search_menu(std::istream& is, std::ostream& os, const Array<Resident>& records);
-  Result<void> array_performance_menu(std::istream& is, std::ostream& os, Array<Resident>& records);
-
+  Result<void> array_load_data(AppState& state);
+  Result<void> array_display_table(AppState& state);
+  Result<void> array_carbon_analysis(AppState& state);
+  Result<void> array_age_group_analysis(AppState& state);
+  Result<void> array_sort_menu(AppState& state);
+  Result<void> array_search_menu(AppState& state);
+  Result<void> array_performance_menu(AppState& state);
 
   // List sub-menu actions
 
-  Result<void> list_load_data(std::istream& is, std::ostream& os, List<Resident>& records);
-  Result<void> list_display_table(std::istream& is, std::ostream& os, const List<Resident>& records);
-  Result<void> list_carbon_analysis(std::istream& is, std::ostream& os, const List<Resident>& records);
-  Result<void> list_age_group_analysis(std::istream& is, std::ostream& os, const List<Resident>& records);
-  Result<void> list_sort_menu(std::istream& is, std::ostream& os, List<Resident>& records);
-  Result<void> list_search_menu(std::istream& is, std::ostream& os, const List<Resident>& records);
-  Result<void> list_performance_menu(std::istream& is, std::ostream& os, List<Resident>& records);
+  Result<void> list_load_data(AppState& state);
+  Result<void> list_display_table(AppState& state);
+  Result<void> list_carbon_analysis(AppState& state);
+  Result<void> list_age_group_analysis(AppState& state);
+  Result<void> list_sort_menu(AppState& state);
+  Result<void> list_search_menu(AppState& state);
+  Result<void> list_performance_menu(AppState& state);
 
 
 } // namespace dstr

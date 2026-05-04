@@ -1,8 +1,6 @@
 // Array.h
 #pragma once
 
-#define DSTR_ARRAY_H_INCLUDED
-
 #include <chrono>
 #include <iomanip>
 #include <iostream>
