@@ -1,21 +1,16 @@
 // cli.cpp
 #include "./cli.h"
 
-#include <algorithm>
-#include <cctype>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <map>
-#include <vector>
+#include "../common/strings/array.h"
 #include "../common/strings/list.h"
-
 
 using std::getline;
 using std::string;
-
 using dstr::strings::NL;
 
 
@@ -23,16 +18,15 @@ namespace dstr {
 
 
   // Helpers
-  
+
   Result<int> get_option(std::istream& is) {
     string soption;
     int option{ -1 };
     getline(is, soption);
-    auto trim_result = trim(soption);
     try {
       option = std::stoi(trim(soption));
     }
-    catch (const std::invalid_argument& e) {
+    catch (const std::invalid_argument&) {
       return Err<int>(ErrorCode::INVALID_ARGUMENT, string(strings::ERR_NOT_NUMBER));
     }
     if (option < 0) {
@@ -42,12 +36,20 @@ namespace dstr {
   }
 
 
-  // Intro and main menu
+  // Entry point
+
   Result<void> cli_start(std::istream& is, std::ostream& os, char* argv, int argc) {
     bool running = true;
+    bool first_run = true;
     while (running) {
-      print_header(os, string(strings::MSG_MAIN_MENU_INTRO));
-      os << strings::MSG_MAIN_MENU_OPTIONS << '\n';
+      if (first_run) {
+        string header = string(strings::MSG_WELCOME) + string(strings::MSG_MAIN_MENU_FIRST_RUN_INTRO);
+        print_header(os, header);
+      }
+      else {
+        print_header(os, string(strings::MSG_MAIN_MENU_INTRO));
+      }
+      os << strings::MSG_MAIN_MENU_OPTIONS << NL;
       auto option = get_option(is);
       if (!option) {
         return Result(option);
@@ -57,32 +59,31 @@ namespace dstr {
         return Err(ErrorCode::TERMINATED, string(strings::ERR_TERMINATED));
       case 1: {
         auto r = goto_array_menu(is, os);
-        if (r.error().code() == ErrorCode::TERMINATED) {
-          running = false;
-        }
+        if (r.error().code() == ErrorCode::TERMINATED) { running = false; }
         break;
       }
       case 2: {
         auto r = goto_list_menu(is, os);
-        if (r.error().code() == ErrorCode::TERMINATED) {
-          running = false;
-        }
+        if (r.error().code() == ErrorCode::TERMINATED) { running = false; }
         break;
       }
-      case 3: {
+      case 3:
         goto_creds(is, os);
         break;
       }
-      }
+      first_run = false;
     }
     return Ok();
   }
 
 
+  // Top-level menus
+
   Result<void> goto_array_menu(std::istream& is, std::ostream& os) {
     Array<Resident> records;
     bool loaded = false;
     bool running = true;
+    bool wait_enter = true;
     while (running) {
       print_header(os, string(strings::MSG_ARR_MENU_HEADER));
       os << strings::MSG_SUB_MENU_OPT_1 << NL;
@@ -108,59 +109,44 @@ namespace dstr {
       switch (option.value()) {
       case 0:
         running = false;
+        wait_enter = false;
         break;
       case 1: {
-        auto r = array_load_data(records);
-        if (r) {
-          loaded = true;
-        }
+        auto r = array_load_data(is, os, records);
+        if (r) { loaded = true; }
         break;
       }
       case 2:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
-        array_display_table(records);
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
+        array_display_table(is, os, records);
         break;
       case 3:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
-        array_carbon_analysis(records);
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
+        array_carbon_analysis(is, os, records);
         break;
       case 4:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
-        array_age_group_analysis(records);
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
+        array_age_group_analysis(is, os, records);
         break;
       case 5:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
-        array_sort_menu(records);
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
+        array_sort_menu(is, os, records);
         break;
       case 6:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
-        array_search_menu(records);
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
+        array_search_menu(is, os, records);
         break;
       case 7:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
-        array_performance_menu(records);
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
+        array_performance_menu(is, os, records);
         break;
       default:
         os << NL << strings::MSG_INVALID_OPTION << NL << NL;
         break;
+      }
+      if (wait_enter) {
+        os << strings::MSG_CONTINUE;
+        await_return(is);
       }
     }
     return Ok();
@@ -183,7 +169,7 @@ namespace dstr {
       os << strings::MSG_SUB_MENU_OPT_7 << NL;
       os << strings::MSG_SUB_MENU_OPT_0 << NL << NL;
       if (loaded) {
-        os << strings::MSG_DATA_LOADED_BEG << /*records.size() <<*/ strings::MSG_DATA_LOADED_END << NL;
+        os << strings::MSG_DATA_LOADED_BEG << records.size() << strings::MSG_DATA_LOADED_END << NL;
       }
       else {
         os << strings::MSG_DATA_NOT_LOADED << NL;
@@ -201,51 +187,31 @@ namespace dstr {
         break;
       case 1: {
         auto r = list_load_data(is, os, records);
-        if (r) {
-          loaded = true;
-        }
+        if (r) { loaded = true; }
         break;
       }
       case 2:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
         list_display_table(is, os, records);
         break;
       case 3:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
         list_carbon_analysis(is, os, records);
         break;
       case 4:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
         list_age_group_analysis(is, os, records);
         break;
       case 5:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
         list_sort_menu(is, os, records);
         break;
       case 6:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
         list_search_menu(is, os, records);
         break;
       case 7:
-        if (!loaded) {
-          os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
-          break;
-        }
+        if (!loaded) { os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL; break; }
         list_performance_menu(is, os, records);
         break;
       default:
@@ -260,8 +226,8 @@ namespace dstr {
     return Ok();
   }
 
-
   Result<void> goto_creds(std::istream& is, std::ostream& os) {
+    print_header(os, string(strings::MSG_DESC_INTRO));
     os << strings::MSG_DESC << NL;
     os << strings::MSG_DESC_MEMBERS << NL;
     os << strings::MSG_DESC_DOCS << NL;
@@ -275,287 +241,391 @@ namespace dstr {
     return Ok();
   }
 
-  Result<void> array_load_data(Array<Resident>& records) {
-    return Result<void>();
-  }
 
-  Result<void> array_display_table(const Array<Resident>& records) {
-    return Result<void>();
-  }
+  // Array menu functions
 
-  Result<void> array_carbon_analysis(const Array<Resident>& records) {
-    return Result<void>();
-  }
-
-  Result<void> array_age_group_analysis(const Array<Resident>& records) {
-    return Result<void>();
-  }
-
-  Result<void> array_sort_menu(Array<Resident>& records) {
-    return Result<void>();
-  }
-
-  Result<void> array_search_menu(const Array<Resident>& records) {
-    return Result<void>();
-  }
-
-  Result<void> array_performance_menu(Array<Resident>& records) {
-    return Result<void>();
-  }
-
-
-  // List menu functions
-
-  // Load data
-  Result<void> dstr::list_load_data(std::istream& is, std::ostream& os, List<Resident>& records) {
-      os << NL << strings::LIST_LOAD_LOADING << NL;
-      int loaded = 0;
-      for (auto path : { strings::PATH_CITY_A, strings::PATH_CITY_B, strings::PATH_CITY_C }) {
-          auto r = load_csv(string(path));
-          if (!r) {
-              os << "[!] " << r.error().message() << NL;
-              continue;
-          }
-          for (int i = 0; i < r.value().size(); ++i) {
-              records.insert(r.value()[i]);
-              ++loaded;
-          }
+  Result<void> array_load_data(std::istream& is, std::ostream& os, Array<Resident>& records) {
+    records.clear();
+    os << NL << strings::ARR_LOAD_LOADING << NL;
+    int loaded = 0;
+    for (auto path : { strings::PATH_CITY_A, strings::PATH_CITY_B, strings::PATH_CITY_C }) {
+      auto r = load_csv(string(path));
+      if (!r) {
+        os << "[!] " << r.error().message() << NL;
+        continue;
       }
-      if (loaded == 0) {
-          std::cout << strings::LIST_LOAD_FAIL << NL << NL;
-          return Err(ErrorCode::EMPTY_CONTAINER, string(strings::LIST_LOAD_FAIL));
+      for (int i = 0; i < r.value().size(); ++i) {
+        records.push_back(r.value()[i]);
+        ++loaded;
       }
-      os << strings::LIST_LOAD_OK_BEG << loaded << strings::LIST_LOAD_OK_END << NL << NL;
-      os << strings::MSG_CONTINUE;
-      return Ok();
+    }
+    if (loaded == 0) {
+      os << strings::ARR_LOAD_FAIL << NL << NL;
+      return Err(ErrorCode::EMPTY_CONTAINER, string(strings::ARR_LOAD_FAIL));
+    }
+    os << strings::ARR_LOAD_OK_BEG << loaded << strings::ARR_LOAD_OK_END << NL << NL;
+    return Ok();
   }
 
-  //  Display table
-  Result<void> dstr::list_display_table(std::istream& is, std::ostream& os, const List<Resident>& records) {
-      os << NL << strings::LIST_TABLE_HEADER << NL;
-      os << strings::LIST_TABLE_DIVIDER << NL;
-      if (records.empty()) {
-          std::cout << strings::LIST_TABLE_EMPTY << NL;
-      }
-      else {
-          int idx = 1;
-          records.for_each([&](const Resident& r) {
-              std::cout << "[" << std::setw(4) << idx++ << "] " << r << NL;
-            });
-      }
-      os << strings::LIST_TABLE_DIVIDER << NL << NL;
-      os << strings::MSG_RETURN;
-      await_return(std::cin);
-      return Ok();
+  Result<void> array_display_table(std::istream& is, std::ostream& os, const Array<Resident>& records) {
+    os << NL << strings::ARR_TABLE_HEADER << NL;
+    print_residents_table_header(os);
+    for (i32 i = 0; i < records.size(); ++i) {
+      print_resident_row(os, records[i], i + 1);
+    }
+    print_separator(os, '-', TABLE_WIDTH);
+    os << NL << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
   }
 
-  // Carbon emission analysis
-  // TODO: remove std::map usage and std::vector usage
-  Result<void> dstr::list_carbon_analysis(std::istream& is, std::ostream& os, const List<Resident>& records) {
-      std::cout << NL << strings::LIST_CARBON_HEADER << NL << NL;
-      // Accumulate per transport mode
-      std::map<ModeOfTransport, float> sum_by_transport;
-      std::map<ModeOfTransport, int>   count_by_transport;
-      float total = 0.0f;
-      records.for_each([&](const Resident& r) {
-          float e = r.monthly_emission();
-          sum_by_transport[r.transport] += e;
-          count_by_transport[r.transport]++;
-          total += e;
-          });
-      // Average per transport mode
-      std::cout << strings::LIST_CARBON_TRANSPORT_HDR << NL;
-      std::cout << std::left
-          << std::setw(20) << "Transport"
-          << std::setw(10) << "Count"
-          << std::setw(20) << "Avg Emission (kg CO2)" << NL;
-      std::cout << std::string(50, '-') << NL;
-      for (auto& [mode, sum] : sum_by_transport) {
-          int cnt = count_by_transport[mode];
-          std::cout << std::left
-              << std::setw(20) << [&]() -> std::string_view {
-              switch (mode) {
-              case ModeOfTransport::CAR:        return "Car";
-              case ModeOfTransport::BUS:        return "Bus";
-              case ModeOfTransport::BICYCLE:    return "Bicycle";
-              case ModeOfTransport::WALKING:    return "Walking";
-              case ModeOfTransport::CARPOOL:    return "Carpool";
-              case ModeOfTransport::SCHOOL_BUS: return "School Bus";
-              default:                          return "Unknown";
-              }
-              }()
-                  << std::setw(10) << cnt
-                  << std::setw(20) << std::fixed << std::setprecision(2)
-                  << (cnt > 0 ? sum / cnt : 0.0f) << NL;
-      }
-      std::cout << NL;
-      // Top 5 highest emitters — collect into vector, partial sort
-      std::vector<Resident> all;
-      all.reserve(records.size());
-      records.for_each([&](const Resident& r) { all.push_back(r); });
-      int top_n = std::min(5, static_cast<int>(all.size()));
-      std::partial_sort(all.begin(), all.begin() + top_n, all.end(),
-          [](const Resident& a, const Resident& b) {
-              return a.monthly_emission() > b.monthly_emission();
-          });
-      std::cout << strings::LIST_CARBON_TOP_HDR << NL;
-      for (int i = 0; i < top_n; ++i)
-          std::cout << "  " << (i + 1) << ". " << all[i] << NL;
-      std::cout << NL;
-      std::cout << strings::LIST_CARBON_TOTAL
-          << std::fixed << std::setprecision(2) << total
-          << strings::LIST_CARBON_UNIT << NL;
-      std::cout << strings::LIST_CARBON_AVG
-          << std::fixed << std::setprecision(2)
-          << (records.size() > 0 ? total / records.size() : 0.0f)
-          << strings::LIST_CARBON_UNIT << NL << NL;
-      std::cout << strings::MSG_RETURN;
-      std::cin.ignore();
-      return Ok();
-  }
-
-  // Age group analysis
-  // TODO: remove std::map usage
-  Result<void> dstr::list_age_group_analysis(std::istream& is, std::ostream& os, const List<Resident>& records) {
-    os << NL << strings::LIST_AGE_HEADER << NL << NL;
-    std::map<AgeGroup, float> sum_by_group;
-    std::map<AgeGroup, int>   count_by_group;
-    records.for_each([&](const Resident& r) {
-      sum_by_group[r.age_group()] += r.monthly_emission();
-      count_by_group[r.age_group()]++;
-      });
-    os << std::left;
-    os << std::setw(26) << strings::LIST_AGE_GROUP_COL;
-    os << std::setw(10) << strings::LIST_AGE_COUNT_COL;
-    os << strings::LIST_AGE_AVG_COL << NL;
+  Result<void> array_carbon_analysis(std::istream& is, std::ostream& os, const Array<Resident>& records) {
+    constexpr int NUM_TRANSPORT = 6;
+    constexpr int NUM_CITIES = 3;
+    float sum_transport[NUM_TRANSPORT] = {};
+    int   cnt_transport[NUM_TRANSPORT] = {};
+    float sum_city[NUM_CITIES] = {};
+    int   cnt_city[NUM_CITIES] = {};
+    float total = 0.0f;
+    for (i32 i = 0; i < records.size(); ++i) {
+      const Resident& r = records[i];
+      float e = r.monthly_emission();
+      int ti = static_cast<int>(r.transport);
+      int ci = static_cast<int>(r.city);
+      if (ti >= 0 && ti < NUM_TRANSPORT) { sum_transport[ti] += e; cnt_transport[ti]++; }
+      if (ci >= 0 && ci < NUM_CITIES) { sum_city[ci] += e;      cnt_city[ci]++; }
+      total += e;
+    }
+    os << NL << strings::ARR_CARBON_HEADER << NL << NL;
+    os << strings::ARR_CARBON_TRANSPORT_HDR << NL;
+    os << std::left << std::setw(20) << "Transport" << std::setw(10) << "Count" << std::setw(20) << "Avg Emission (kg CO2)" << NL;
+    print_separator(os, '-', 50);
+    for (int ti = 0; ti < NUM_TRANSPORT; ++ti) {
+      float avg = cnt_transport[ti] > 0 ? sum_transport[ti] / cnt_transport[ti] : 0.0f;
+      os << std::left << std::setw(20) << transport_name(static_cast<ModeOfTransport>(ti)) << std::setw(10) << cnt_transport[ti] << std::fixed << std::setprecision(2) << avg << NL;
+    }
+    os << NL << strings::ARR_CARBON_CITY_HDR << NL;
+    os << std::left << std::setw(28) << "City" << std::setw(10) << "Count" << std::setw(20) << "Avg Emission (kg CO2)" << NL;
     print_separator(os, '-', 58);
+    for (int ci = 0; ci < NUM_CITIES; ++ci) {
+      float avg = cnt_city[ci] > 0 ? sum_city[ci] / cnt_city[ci] : 0.0f;
+      os << std::left << std::setw(28) << city_name(static_cast<City>(ci)) << std::setw(10) << cnt_city[ci] << std::fixed << std::setprecision(2) << avg << NL;
+    }
     os << NL;
-    for (auto& [group, sum] : sum_by_group) {
-        int cnt = count_by_group[group];
-        os << std::left;
-        os << std::setw(26) << age_group_name(group);
-        os << std::setw(10) << cnt;
-        os << std::fixed << std::setprecision(2);
-        os << (cnt > 0 ? sum / cnt : 0.0f) << NL;
+    os << strings::ARR_CARBON_TOTAL << std::fixed << std::setprecision(2) << total << strings::ARR_CARBON_UNIT << NL;
+    os << strings::ARR_CARBON_AVG << std::fixed << std::setprecision(2) << (records.size() > 0 ? total / records.size() : 0.0f) << strings::ARR_CARBON_UNIT << NL << NL;
+    os << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
+  }
+
+  Result<void> array_age_group_analysis(std::istream& is, std::ostream& os, const Array<Resident>& records) {
+    constexpr int NUM_GROUPS = 5;
+    float sum_group[NUM_GROUPS] = {};
+    int   cnt_group[NUM_GROUPS] = {};
+    for (i32 i = 0; i < records.size(); ++i) {
+      int gi = static_cast<int>(records[i].age_group());
+      if (gi >= 0 && gi < NUM_GROUPS) {
+        sum_group[gi] += records[i].monthly_emission();
+        cnt_group[gi]++;
+      }
+    }
+    os << NL << strings::ARR_AGE_HEADER << NL << NL;
+    os << std::left << std::setw(30) << strings::ARR_AGE_GROUP_COL << std::setw(10) << strings::ARR_AGE_COUNT_COL << strings::ARR_AGE_AVG_COL << NL;
+    print_separator(os, '-', 58);
+    for (int gi = 0; gi < NUM_GROUPS; ++gi) {
+      float avg = cnt_group[gi] > 0 ? sum_group[gi] / cnt_group[gi] : 0.0f;
+      os << std::left << std::setw(30) << age_group_name(static_cast<AgeGroup>(gi)) << std::setw(10) << cnt_group[gi] << std::fixed << std::setprecision(2) << avg << NL;
     }
     os << NL << strings::MSG_RETURN;
     await_return(is);
     return Ok();
   }
 
-  // Sort experiments 
-  Result<void> dstr::list_sort_menu(std::istream& is, std::ostream& os, List<Resident>& records) {
+  Result<void> array_sort_menu(std::istream& is, std::ostream& os, Array<Resident>& records) {
+    using namespace std::chrono;
+    os << NL << strings::ARR_SORT_HEADER << NL;
+    os << strings::ARR_SORT_PROMPT << NL << NL;
+    auto comp_emission = [](const Resident& a, const Resident& b) { return a.monthly_emission() < b.monthly_emission(); };
+    auto comp_age = [](const Resident& a, const Resident& b) { return a.age < b.age; };
+    auto comp_dist = [](const Resident& a, const Resident& b) { return a.daily_distance_km < b.daily_distance_km; };
+    Array<Resident> copy_bubble = records;
+    Array<Resident> copy_insertion = records;
+    Array<Resident> copy_quick = records;
+    auto t0 = high_resolution_clock::now();
+    copy_bubble.bubble_sort(comp_age);
+    auto t1 = high_resolution_clock::now();
+    copy_insertion.insertion_sort(comp_dist);
+    auto t2 = high_resolution_clock::now();
+    copy_quick.quick_sort(comp_emission);
+    auto t3 = high_resolution_clock::now();
+    u64 us_bubble = static_cast<u64>(duration_cast<microseconds>(t1 - t0).count());
+    u64 us_insertion = static_cast<u64>(duration_cast<microseconds>(t2 - t1).count());
+    u64 us_quick = static_cast<u64>(duration_cast<microseconds>(t3 - t2).count());
+    os << "+---------------------+----------------+" << NL;
+    os << "| Sort Method         | Time (us)      |" << NL;
+    os << "+---------------------+----------------+" << NL;
+    os << "| Bubble  (by age)    | " << std::setw(14) << us_bubble << " |" << NL;
+    os << "| Insertion (by dist) | " << std::setw(14) << us_insertion << " |" << NL;
+    os << "| Quick (by emission) | " << std::setw(14) << us_quick << " |" << NL;
+    os << "+---------------------+----------------+" << NL;
+    os << "  Elements: " << records.size() << NL << NL;
+    os << strings::ARR_SORT_RESULT_HDR << NL;
+    print_residents_table_header(os);
+    constexpr i32 PREVIEW = 10;
+    i32 limit = copy_quick.size() < PREVIEW ? copy_quick.size() : PREVIEW;
+    for (i32 i = 0; i < limit; ++i) { print_resident_row(os, copy_quick[i], i + 1); }
+    print_separator(os, '-', TABLE_WIDTH);
+    os << NL << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
+  }
+
+  Result<void> array_search_menu(std::istream& is, std::ostream& os, const Array<Resident>& records) {
+    using namespace std::chrono;
+    os << NL << strings::ARR_SEARCH_HEADER << NL;
+    os << strings::MSG_SEARCH_RES_BY_ID_PROMPT;
+    string target_id;
+    getline(is, target_id);
+    target_id = trim(target_id);
+    auto t0 = high_resolution_clock::now();
+    i32 idx = records.linear_search([&](const Resident& r) { return r.id == target_id; });
+    auto t1 = high_resolution_clock::now();
+    u64 us = static_cast<u64>(duration_cast<microseconds>(t1 - t0).count());
+    os << NL;
+    if (idx >= 0) {
+      os << strings::ARR_SEARCH_FOUND;
+      print_resident_row(os, records[idx], idx + 1);
+    }
+    else {
+      os << strings::ARR_SEARCH_NOT_FOUND << NL;
+    }
+    os << strings::MSG_SEARCH_RES_BEG << us << strings::MSG_SEARCH_RES_END << NL << NL;
+    os << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
+  }
+
+  Result<void> array_performance_menu(std::istream& is, std::ostream& os, Array<Resident>& records) {
+    using namespace std::chrono;
+    os << NL << strings::ARR_PERF_HEADER << NL << NL;
+    Resident mid = records[records.size() / 2];
+    auto comp_emission = [](const Resident& a, const Resident& b) { return a.monthly_emission() < b.monthly_emission(); };
+    auto comp_age = [](const Resident& a, const Resident& b) { return a.age < b.age; };
+    auto comp_dist = [](const Resident& a, const Resident& b) { return a.daily_distance_km < b.daily_distance_km; };
+    auto key_emission = [&mid](const Resident& a) { return a.monthly_emission() == mid.monthly_emission(); };
+    Array<Resident> copy_b = records;
+    Array<Resident> copy_i = records;
+    Array<Resident> copy_q = records;
+    auto t0 = high_resolution_clock::now(); copy_b.bubble_sort(comp_age);      auto t1 = high_resolution_clock::now();
+    auto t2 = high_resolution_clock::now(); copy_i.insertion_sort(comp_dist);  auto t3 = high_resolution_clock::now();
+    auto t4 = high_resolution_clock::now(); copy_q.quick_sort(comp_emission);  auto t5 = high_resolution_clock::now();
+    u64 us_bubble = static_cast<u64>(duration_cast<microseconds>(t1 - t0).count());
+    u64 us_insertion = static_cast<u64>(duration_cast<microseconds>(t3 - t2).count());
+    u64 us_quick = static_cast<u64>(duration_cast<microseconds>(t5 - t4).count());
+    auto s0 = high_resolution_clock::now(); records.linear_search([&](const Resident& r) { return r.id == mid.id; }); auto s1 = high_resolution_clock::now();
+    auto s2 = high_resolution_clock::now(); copy_q.binary_search(comp_emission, key_emission, mid);                    auto s3 = high_resolution_clock::now();
+    u64 us_linear = static_cast<u64>(duration_cast<microseconds>(s1 - s0).count());
+    u64 us_binary = static_cast<u64>(duration_cast<microseconds>(s3 - s2).count());
+    os << "+---------------------+----------------+" << NL;
+    os << "| Sort Method         | Time (us)      |" << NL;
+    os << "+---------------------+----------------+" << NL;
+    os << "| Bubble  (by age)    | " << std::setw(14) << us_bubble << " |" << NL;
+    os << "| Insertion (by dist) | " << std::setw(14) << us_insertion << " |" << NL;
+    os << "| Quick (by emission) | " << std::setw(14) << us_quick << " |" << NL;
+    os << "+---------------------+----------------+" << NL << NL;
+    os << "+---------------------+----------------+" << NL;
+    os << "| Search Method       | Time (us)      |" << NL;
+    os << "+---------------------+----------------+" << NL;
+    os << "| Linear (by id)      | " << std::setw(14) << us_linear << " |" << NL;
+    os << "| Binary (by emission)| " << std::setw(14) << us_binary << " |" << NL;
+    os << "+---------------------+----------------+" << NL;
+    os << "  Elements: " << records.size() << NL;
+    os << "  Memory:   " << records.memory_usage() << " bytes" << NL << NL;
+    os << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
+  }
+
+
+  // List menu functions
+
+  Result<void> list_load_data(std::istream& is, std::ostream& os, List<Resident>& records) {
+    os << NL << strings::LIST_LOAD_LOADING << NL;
+    int loaded = 0;
+    for (auto path : { strings::PATH_CITY_A, strings::PATH_CITY_B, strings::PATH_CITY_C }) {
+      auto r = load_csv(string(path));
+      if (!r) {
+        os << "[!] " << r.error().message() << NL;
+        continue;
+      }
+      for (int i = 0; i < r.value().size(); ++i) {
+        records.insert(r.value()[i]);
+        ++loaded;
+      }
+    }
+    if (loaded == 0) {
+      os << strings::LIST_LOAD_FAIL << NL << NL;
+      return Err(ErrorCode::EMPTY_CONTAINER, string(strings::LIST_LOAD_FAIL));
+    }
+    os << strings::LIST_LOAD_OK_BEG << loaded << strings::LIST_LOAD_OK_END << NL << NL;
+    return Ok();
+  }
+
+  Result<void> list_display_table(std::istream& is, std::ostream& os, const List<Resident>& records) {
+    os << NL << strings::LIST_TABLE_HEADER << NL;
+    os << strings::LIST_TABLE_DIVIDER << NL;
+    if (records.empty()) {
+      os << strings::LIST_TABLE_EMPTY << NL;
+    }
+    else {
+      int idx = 1;
+      records.for_each([&](const Resident& r) { os << "[" << std::setw(4) << idx++ << "] " << r << NL; });
+    }
+    os << strings::LIST_TABLE_DIVIDER << NL << NL;
+    os << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
+  }
+
+  Result<void> list_carbon_analysis(std::istream& is, std::ostream& os, const List<Resident>& records) {
+    constexpr int NUM_TRANSPORT = 6;
+    constexpr int TOP_N = 5;
+    float sum_transport[NUM_TRANSPORT] = {};
+    int   cnt_transport[NUM_TRANSPORT] = {};
+    float total = 0.0f;
+    std::shared_ptr<const Resident> top[TOP_N] = {};
+    int top_count = 0;
+    records.for_each([&](const Resident& r) {
+      float e = r.monthly_emission();
+      int ti = static_cast<int>(r.transport);
+      if (ti >= 0 && ti < NUM_TRANSPORT) { sum_transport[ti] += e; cnt_transport[ti]++; }
+      total += e;
+      if (top_count < TOP_N) {
+        top[top_count++] = std::make_shared<Resident>(r);
+        for (int i = top_count - 1; i > 0 && top[i]->monthly_emission() > top[i - 1]->monthly_emission(); --i) { std::swap(top[i], top[i - 1]); }
+      }
+      else if (e > top[TOP_N - 1]->monthly_emission()) {
+        top[TOP_N - 1] = std::make_shared<Resident>(r);
+        for (int i = TOP_N - 1; i > 0 && top[i]->monthly_emission() > top[i - 1]->monthly_emission(); --i) { std::swap(top[i], top[i - 1]); }
+      }
+      });
+    os << NL << strings::LIST_CARBON_HEADER << NL << NL;
+    os << strings::LIST_CARBON_TRANSPORT_HDR << NL;
+    os << std::left << std::setw(20) << "Transport" << std::setw(10) << "Count" << std::setw(20) << "Avg Emission (kg CO2)" << NL;
+    print_separator(os, '-', 50);
+    for (int ti = 0; ti < NUM_TRANSPORT; ++ti) {
+      float avg = cnt_transport[ti] > 0 ? sum_transport[ti] / cnt_transport[ti] : 0.0f;
+      os << std::left << std::setw(20) << transport_name(static_cast<ModeOfTransport>(ti)) << std::setw(10) << cnt_transport[ti] << std::fixed << std::setprecision(2) << avg << NL;
+    }
+    os << NL << strings::LIST_CARBON_TOP_HDR << NL;
+    for (int i = 0; i < top_count; ++i) { os << "  " << (i + 1) << ". " << *top[i] << NL; }
+    os << NL;
+    os << strings::LIST_CARBON_TOTAL << std::fixed << std::setprecision(2) << total << strings::LIST_CARBON_UNIT << NL;
+    os << strings::LIST_CARBON_AVG << std::fixed << std::setprecision(2) << (records.size() > 0 ? total / records.size() : 0.0f) << strings::LIST_CARBON_UNIT << NL << NL;
+    os << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
+  }
+
+  Result<void> list_age_group_analysis(std::istream& is, std::ostream& os, const List<Resident>& records) {
+    constexpr int NUM_GROUPS = 5;
+    float sum_group[NUM_GROUPS] = {};
+    int   cnt_group[NUM_GROUPS] = {};
+    records.for_each([&](const Resident& r) {
+      int gi = static_cast<int>(r.age_group());
+      if (gi >= 0 && gi < NUM_GROUPS) { sum_group[gi] += r.monthly_emission(); cnt_group[gi]++; }
+      });
+    os << NL << strings::LIST_AGE_HEADER << NL << NL;
+    os << std::left << std::setw(30) << strings::LIST_AGE_GROUP_COL << std::setw(10) << strings::LIST_AGE_COUNT_COL << strings::LIST_AGE_AVG_COL << NL;
+    print_separator(os, '-', 58);
+    for (int gi = 0; gi < NUM_GROUPS; ++gi) {
+      float avg = cnt_group[gi] > 0 ? sum_group[gi] / cnt_group[gi] : 0.0f;
+      os << std::left << std::setw(30) << age_group_name(static_cast<AgeGroup>(gi)) << std::setw(10) << cnt_group[gi] << std::fixed << std::setprecision(2) << avg << NL;
+    }
+    os << NL << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
+  }
+
+  Result<void> list_sort_menu(std::istream& is, std::ostream& os, List<Resident>& records) {
     using namespace std::chrono;
     os << NL << strings::LIST_SORT_HEADER << NL;
     os << strings::LIST_SORT_PROMPT << NL << NL;
-    // The skip list is always sorted on insert — we just time a full traversal
-    // to demonstrate the O(log n) structure is intact
     auto t0 = high_resolution_clock::now();
-    records.sort();  // no-op, but we also do a full traversal to verify order
+    records.sort();
     volatile int count = 0;
     records.for_each([&](const Resident&) { ++count; });
     auto t1 = high_resolution_clock::now();
-    long long us = duration_cast<microseconds>(t1 - t0).count();
-    os << strings::LIST_SORT_DONE_BEG << us;
-    os << strings::LIST_SORT_DONE_END << NL << NL;
-    // Print the sorted result
-    os << "+--------------------+----------------+\n";
-    os << "| Sort Method        | Time (us)      |\n";
-    os << "+--------------------+----------------+\n";
-    os << "| Skip List (insert) | ";
-    os << std::setw(14) << us << " |\n";
-    os << "+--------------------+----------------+\n";
+    u64 us = static_cast<u64>(duration_cast<microseconds>(t1 - t0).count());
+    os << "+--------------------+----------------+" << NL;
+    os << "| Sort Method        | Time (us)      |" << NL;
+    os << "+--------------------+----------------+" << NL;
+    os << "| Skip List (insert) | " << std::setw(14) << us << " |" << NL;
+    os << "+--------------------+----------------+" << NL;
     os << "  Elements: " << records.size() << NL << NL;
     os << strings::MSG_RETURN;
     await_return(is);
     return Ok();
   }
 
-  // Search experiments
-  // TODO: 
-  Result<void> dstr::list_search_menu(std::istream& is, std::ostream& os, const List<Resident>& records) {
+  Result<void> list_search_menu(std::istream& is, std::ostream& os, const List<Resident>& records) {
     using namespace std::chrono;
     os << NL << strings::LIST_SEARCH_HEADER << NL;
     os << strings::LIST_SEARCH_PROMPT;
     string target_id;
-    std::getline(is, target_id);
+    getline(is, target_id);
     target_id = trim(target_id);
-    // Build a dummy Resident to search by ID (operator== compares id only)
     Resident target{};
     target.id = target_id;
-    // skip list orders by monthly_emission via operator<,
-    // so set emission fields to 0 — find() uses == (id match) at candidate node
-    target.daily_distance_km = 0;
-    target.carbon_emission_factor = 0.0f;
-    target.avg_days_per_month = 0;
     auto t0 = high_resolution_clock::now();
     const Resident* result = records.find(target);
     auto t1 = high_resolution_clock::now();
-    long long us = duration_cast<microseconds>(t1 - t0).count();
+    u64 us = static_cast<u64>(duration_cast<microseconds>(t1 - t0).count());
     os << NL;
     if (result) {
       os << strings::LIST_SEARCH_FOUND << *result << NL;
     }
     else {
-      // Skip list is sorted by emission, not ID — fall back to linear scan
-      // so the user still gets a result for ID-based lookup
-      const Resident* found = nullptr;
-      records.for_each([&](const Resident& r) {
-        if (!found && r.id == target_id) found = &r;
-      });
-      if (found) {
-        std::cout << strings::LIST_SEARCH_FOUND << *found << NL;
-      }
-      else {
-        std::cout << strings::LIST_SEARCH_NOT_FOUND << NL;
-      }
+      std::shared_ptr<const Resident> found;
+      records.for_each([&](const Resident& r) { if (!found && r.id == target_id) { found = std::make_shared<Resident>(r); } });
+      if (found) { os << strings::LIST_SEARCH_FOUND << *found << NL; }
+      else { os << strings::LIST_SEARCH_NOT_FOUND << NL; }
     }
-    os << strings::LIST_SEARCH_TIME_BEG << us;
-    os << strings::LIST_SEARCH_TIME_END << NL << NL;
+    os << strings::LIST_SEARCH_TIME_BEG << us << strings::LIST_SEARCH_TIME_END << NL << NL;
     os << strings::MSG_RETURN;
     await_return(is);
     return Ok();
   }
 
-  // Performance analysis
-  // TODO: remove std::vector<> usage
-  Result<void> dstr::list_performance_menu(std::istream& is, std::ostream& os, List<Resident>& records) {
+  Result<void> list_performance_menu(std::istream& is, std::ostream& os, List<Resident>& records) {
     using namespace std::chrono;
     os << NL << strings::LIST_PERF_HEADER << NL << NL;
-    //  Insert benchmark: rebuild list from scratch and time it
-    std::vector<Resident> snapshot;
-    snapshot.reserve(records.size());
-    records.for_each([&](const Resident& r) { snapshot.push_back(r); });
     List<Resident> bench_list;
     auto t0 = high_resolution_clock::now();
-    for (const auto& r : snapshot) {
-      bench_list.insert(r);
-    }
+    records.for_each([&](const Resident& r) { bench_list.insert(r); });
     auto t1 = high_resolution_clock::now();
-    long long t_insert = duration_cast<microseconds>(t1 - t0).count();
-    //  Search benchmark: search for the middle element by emission order
-    long long t_search = 0;
-    if (!snapshot.empty()) {
-        // snapshot is unsorted; pick one that exists in the list
-        const Resident& mid = snapshot[snapshot.size() / 2];
+    u64 t_insert = static_cast<u64>(duration_cast<microseconds>(t1 - t0).count());
+    u64 t_search = 0;
+    if (records.size() > 0) {
+      int current = 0;
+      int target_idx = records.size() / 2;
+      std::shared_ptr<Resident> mid;
+      records.for_each([&](const Resident& r) { if (current++ == target_idx) { mid = std::make_shared<Resident>(r); } });
+      if (mid) {
         auto s0 = high_resolution_clock::now();
-        bench_list.find(mid);
+        bench_list.find(*mid);
         auto s1 = high_resolution_clock::now();
         t_search = duration_cast<microseconds>(s1 - s0).count();
+      }
     }
-    //  Traversal benchmark
-    auto v0 = high_resolution_clock::now();
     volatile int dummy = 0;
+    auto v0 = high_resolution_clock::now();
     records.for_each([&](const Resident&) { ++dummy; });
     auto v1 = high_resolution_clock::now();
-    long long t_traverse = duration_cast<microseconds>(v1 - v0).count();
-    //  Memory estimate: per node ~ sizeof(T) + sizeof(vector header) + avg 2 pointers per node
-    // avg levels ≈ 2 for p=0.5, so ~2 forward pointers per node
-    size_t node_size = sizeof(Resident)
-        + sizeof(std::vector<void*>)    // forward vector header
-        + 2 * sizeof(void*);            // avg forward pointers
-    size_t mem_est = node_size * static_cast<size_t>(records.size()) + sizeof(List<Resident>);
-    //  Print results
+    u64 t_traverse = static_cast<u64>(duration_cast<microseconds>(v1 - v0).count());
+    u64 node_size = sizeof(Resident) + sizeof(std::vector<void*>) + 2 * sizeof(void*);
+    u64 mem_est = node_size * static_cast<u64>(records.size()) + sizeof(List<Resident>);
     os << strings::LIST_PERF_COUNT_BEG << records.size() << NL;
     os << strings::LIST_PERF_INSERT_BEG << t_insert << strings::LIST_PERF_INSERT_END << NL;
     os << strings::LIST_PERF_SEARCH_BEG << t_search << strings::LIST_PERF_SEARCH_END << NL;
@@ -564,7 +634,7 @@ namespace dstr {
     os << NL << strings::MSG_RETURN;
     await_return(is);
     return Ok();
-}
+  }
 
-  
+
 } // namespace dstr

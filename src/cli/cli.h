@@ -29,13 +29,13 @@ namespace dstr {
 
   // Array sub-menu actions
 
-  Result<void> array_load_data(Array<Resident>& records);
-  Result<void> array_display_table(const Array<Resident>& records);
-  Result<void> array_carbon_analysis(const Array<Resident>& records);
-  Result<void> array_age_group_analysis(const Array<Resident>& records);
-  Result<void> array_sort_menu(Array<Resident>& records);
-  Result<void> array_search_menu(const Array<Resident>& records);
-  Result<void> array_performance_menu(Array<Resident>& records);
+  Result<void> array_load_data(std::istream& is, std::ostream& os, Array<Resident>& records);
+  Result<void> array_display_table(std::istream& is, std::ostream& os, const Array<Resident>& records);
+  Result<void> array_carbon_analysis(std::istream& is, std::ostream& os, const Array<Resident>& records);
+  Result<void> array_age_group_analysis(std::istream& is, std::ostream& os, const Array<Resident>& records);
+  Result<void> array_sort_menu(std::istream& is, std::ostream& os, Array<Resident>& records);
+  Result<void> array_search_menu(std::istream& is, std::ostream& os, const Array<Resident>& records);
+  Result<void> array_performance_menu(std::istream& is, std::ostream& os, Array<Resident>& records);
 
 
   // List sub-menu actions

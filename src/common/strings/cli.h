@@ -12,13 +12,14 @@ namespace dstr::strings {
 
   SCSTR MSG_CONTINUE = "Press ENTER to continue...";
   SCSTR MSG_RETURN = "Press ENTER to return...";
-  SCSTR MSG_WELCOME = "Welcome!";
+  SCSTR MSG_WELCOME = "Welcome! ";
   SCSTR MSG_BYE = "Goodbye!";
   SCSTR MSG_OPTION = "Option: ";
   SCSTR MSG_INVALID_OPTION = "[!] Invalid option. Please choose among the options listed above.";
 
-  SCSTR MSG_MAIN_MENU_INTRO = "You are in the main menu. Choose an option and press ENTER to interact with the program.";
-  SCSTR MSG_MAIN_MENU_OPTIONS = "1.Array implementation\n2.List implementation\n3.Credits\n0.Exit";
+  SCSTR MSG_MAIN_MENU_FIRST_RUN_INTRO = "You are in the main menu. Choose an option and press ENTER to interact with the program.";
+  SCSTR MSG_MAIN_MENU_INTRO = "Main Menu";
+  SCSTR MSG_MAIN_MENU_OPTIONS = "1.Array implementation\n2.List implementation\n3.Project description\n0.Exit";
 
   SCSTR MSG_ARR_MENU_HEADER = "Array Implementation";
   SCSTR MSG_LIST_MENU_HEADER = "Linked List Implementation";
@@ -36,6 +37,7 @@ namespace dstr::strings {
   SCSTR MSG_DATA_NOT_LOADED = "[No data loaded. Choose option 1 first]";
   SCSTR MSG_DATA_NOT_LOADED_X = "[!] Load data first (option 1).";
 
+  SCSTR MSG_DESC_INTRO = "Project Description";
   SCSTR MSG_DESC = "This is Data Structures (DSTR) assignment of group DSTR32.";
   SCSTR MSG_DESC_MEMBERS = "Group members are:\nTP081705 - Kurapatkin Aliaksandr (Alex) (Leader)\nTP082557 - Leon Frank Aminiel (Leo)\nTP082459 - Mohamed Abdifatah Ali (Moha)";
   SCSTR MSG_DESC_DOCS = "All the documentation can be found at our GitHub repository: https://github.com/TeamHabooba/DSTR";
