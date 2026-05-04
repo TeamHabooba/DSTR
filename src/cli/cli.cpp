@@ -295,27 +295,19 @@ namespace dstr {
   Result<void> array_performance_menu(Array<Resident>& records) {
     return Result<void>();
   }
-  // ============================================================
+
+
   // List menu functions
-  // ============================================================
 
+  // 1. Load data
 
-  using namespace std::chrono;
-  using dstr::strings::NL;
-
-
-  // ── 1. Load data ─────────────────────────────────────────────────────────────
-
-  Result<void> dstr::list_load_data(List<Resident>& records) {
-      std::cout << NL << strings::LIST_LOAD_LOADING << NL;
-
+  Result<void> dstr::list_load_data(std::ostream& os, List<Resident>& records) {
+      os << NL << strings::LIST_LOAD_LOADING << NL;
       int loaded = 0;
-      for (auto path : { strings::PATH_CITY_A,
-                         strings::PATH_CITY_B,
-                         strings::PATH_CITY_C }) {
+      for (auto path : { strings::PATH_CITY_A, strings::PATH_CITY_B, strings::PATH_CITY_C }) {
           auto r = load_csv(string(path));
           if (!r) {
-              std::cout << "[!] " << r.error().message() << NL;
+              os << "[!] " << r.error().message() << NL;
               continue;
           }
           for (int i = 0; i < r.value().size(); ++i) {
@@ -323,15 +315,12 @@ namespace dstr {
               ++loaded;
           }
       }
-
       if (loaded == 0) {
           std::cout << strings::LIST_LOAD_FAIL << NL << NL;
           return Err(ErrorCode::EMPTY_CONTAINER, string(strings::LIST_LOAD_FAIL));
       }
-
-      std::cout << strings::LIST_LOAD_OK_BEG << loaded
-          << strings::LIST_LOAD_OK_END << NL << NL;
-      std::cout << strings::MSG_CONTINUE;
+      os << strings::LIST_LOAD_OK_BEG << loaded << strings::LIST_LOAD_OK_END << NL << NL;
+      os << strings::MSG_CONTINUE;
       std::cin.ignore();
       return Ok();
   }

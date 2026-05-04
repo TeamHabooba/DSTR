@@ -40,7 +40,7 @@ namespace dstr {
 
   // List sub-menu actions
 
-  Result<void> list_load_data(List<Resident>& records);
+  Result<void> list_load_data(std::ostream& os, List<Resident>& records);
   Result<void> list_display_table(const List<Resident>& records);
   Result<void> list_carbon_analysis(const List<Resident>& records);
   Result<void> list_age_group_analysis(const List<Resident>& records);
