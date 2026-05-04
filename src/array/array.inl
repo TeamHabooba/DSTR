@@ -1,11 +1,5 @@
 // Array.inl
-#ifndef DSTR_ARRAY_IMPLEMENTATION
-#define DSTR_ARRAY_IMPLEMENTATION
-
-#ifndef DSTR_ARRAY_H_INCLUDED
-#include "array.h"
-#endif
-
+#pragma once
 #include <cmath>
 #include <utility>
 
@@ -414,5 +408,3 @@ namespace dstr {
   }
 
 } // namespace dstr
-
-#endif // DSTR_ARRAY_IMPLEMENTATION..
