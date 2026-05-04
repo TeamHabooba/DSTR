@@ -39,6 +39,10 @@ namespace dstr {
   // Entry point
 
   Result<void> cli_start(std::istream& is, std::ostream& os, char* argv, int argc) {
+    Array<Resident> arr_records;
+    List<Resident> list_records;
+    bool arr_loaded = false;
+    bool list_loaded = false;
     bool running = true;
     bool first_run = true;
     while (running) {
@@ -58,12 +62,12 @@ namespace dstr {
       case 0:
         return Err(ErrorCode::TERMINATED, string(strings::ERR_TERMINATED));
       case 1: {
-        auto r = goto_array_menu(is, os);
+        auto r = goto_array_menu(is, os, arr_records, arr_loaded);
         if (r.error().code() == ErrorCode::TERMINATED) { running = false; }
         break;
       }
       case 2: {
-        auto r = goto_list_menu(is, os);
+        auto r = goto_list_menu(is, os, list_records, list_loaded);
         if (r.error().code() == ErrorCode::TERMINATED) { running = false; }
         break;
       }
@@ -79,9 +83,7 @@ namespace dstr {
 
   // Top-level menus
 
-  Result<void> goto_array_menu(std::istream& is, std::ostream& os) {
-    Array<Resident> records;
-    bool loaded = false;
+  Result<void> goto_array_menu(std::istream& is, std::ostream& os, Array<Resident>& records, bool& loaded) {
     bool running = true;
     bool wait_enter = true;
     while (running) {
@@ -152,9 +154,7 @@ namespace dstr {
     return Ok();
   }
 
-  Result<void> goto_list_menu(std::istream& is, std::ostream& os) {
-    List<Resident> records;
-    bool loaded = false;
+  Result<void> goto_list_menu(std::istream& is, std::ostream& os, List<Resident>& records, bool& loaded) {
     bool running = true;
     bool wait_enter = true;
     while (running) {
@@ -274,8 +274,6 @@ namespace dstr {
       print_resident_row(os, records[i], i + 1);
     }
     print_separator(os, '-', TABLE_WIDTH);
-    os << NL << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -314,8 +312,6 @@ namespace dstr {
     os << NL;
     os << strings::ARR_CARBON_TOTAL << std::fixed << std::setprecision(2) << total << strings::ARR_CARBON_UNIT << NL;
     os << strings::ARR_CARBON_AVG << std::fixed << std::setprecision(2) << (records.size() > 0 ? total / records.size() : 0.0f) << strings::ARR_CARBON_UNIT << NL << NL;
-    os << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -337,8 +333,6 @@ namespace dstr {
       float avg = cnt_group[gi] > 0 ? sum_group[gi] / cnt_group[gi] : 0.0f;
       os << std::left << std::setw(30) << age_group_name(static_cast<AgeGroup>(gi)) << std::setw(10) << cnt_group[gi] << std::fixed << std::setprecision(2) << avg << NL;
     }
-    os << NL << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -376,8 +370,6 @@ namespace dstr {
     i32 limit = copy_quick.size() < PREVIEW ? copy_quick.size() : PREVIEW;
     for (i32 i = 0; i < limit; ++i) { print_resident_row(os, copy_quick[i], i + 1); }
     print_separator(os, '-', TABLE_WIDTH);
-    os << NL << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -394,15 +386,14 @@ namespace dstr {
     u64 us = static_cast<u64>(duration_cast<microseconds>(t1 - t0).count());
     os << NL;
     if (idx >= 0) {
-      os << strings::ARR_SEARCH_FOUND;
+      os << strings::ARR_SEARCH_FOUND << NL;
+      print_residents_table_header(os);
       print_resident_row(os, records[idx], idx + 1);
     }
     else {
       os << strings::ARR_SEARCH_NOT_FOUND << NL;
     }
     os << strings::MSG_SEARCH_RES_BEG << us << strings::MSG_SEARCH_RES_END << NL << NL;
-    os << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -442,8 +433,6 @@ namespace dstr {
     os << "+---------------------+----------------+" << NL;
     os << "  Elements: " << records.size() << NL;
     os << "  Memory:   " << records.memory_usage() << " bytes" << NL << NL;
-    os << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -483,8 +472,6 @@ namespace dstr {
       records.for_each([&](const Resident& r) { os << "[" << std::setw(4) << idx++ << "] " << r << NL; });
     }
     os << strings::LIST_TABLE_DIVIDER << NL << NL;
-    os << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -523,8 +510,6 @@ namespace dstr {
     os << NL;
     os << strings::LIST_CARBON_TOTAL << std::fixed << std::setprecision(2) << total << strings::LIST_CARBON_UNIT << NL;
     os << strings::LIST_CARBON_AVG << std::fixed << std::setprecision(2) << (records.size() > 0 ? total / records.size() : 0.0f) << strings::LIST_CARBON_UNIT << NL << NL;
-    os << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -543,8 +528,6 @@ namespace dstr {
       float avg = cnt_group[gi] > 0 ? sum_group[gi] / cnt_group[gi] : 0.0f;
       os << std::left << std::setw(30) << age_group_name(static_cast<AgeGroup>(gi)) << std::setw(10) << cnt_group[gi] << std::fixed << std::setprecision(2) << avg << NL;
     }
-    os << NL << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -564,8 +547,6 @@ namespace dstr {
     os << "| Skip List (insert) | " << std::setw(14) << us << " |" << NL;
     os << "+--------------------+----------------+" << NL;
     os << "  Elements: " << records.size() << NL << NL;
-    os << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -593,8 +574,6 @@ namespace dstr {
       else { os << strings::LIST_SEARCH_NOT_FOUND << NL; }
     }
     os << strings::LIST_SEARCH_TIME_BEG << us << strings::LIST_SEARCH_TIME_END << NL << NL;
-    os << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 
@@ -631,8 +610,6 @@ namespace dstr {
     os << strings::LIST_PERF_SEARCH_BEG << t_search << strings::LIST_PERF_SEARCH_END << NL;
     os << strings::LIST_PERF_TRAVERSE_BEG << t_traverse << strings::LIST_PERF_TRAVERSE_END << NL;
     os << strings::LIST_PERF_MEM_BEG << mem_est << strings::LIST_PERF_MEM_END << NL;
-    os << NL << strings::MSG_RETURN;
-    await_return(is);
     return Ok();
   }
 

@@ -50,7 +50,7 @@ namespace dstr::strings {
   SCSTR LIST_PERF_TRAVERSE_BEG    = "Full traversal time:      ";
   SCSTR LIST_PERF_TRAVERSE_END    = " microseconds.";
   SCSTR LIST_PERF_MEM_BEG         = "Estimated memory usage:   ";
-  SCSTR LIST_PERF_MEM_END         = " bytes (approx)";
+  SCSTR LIST_PERF_MEM_END         = " bytes.";
   SCSTR LIST_PERF_COUNT_BEG       = "Total records loaded:     ";
 
   // Load data

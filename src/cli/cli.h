@@ -22,8 +22,8 @@ namespace dstr {
 
   // Top-level menus
 
-  Result<void> goto_array_menu(std::istream& is, std::ostream& os);
-  Result<void> goto_list_menu(std::istream& is, std::ostream& os);
+  Result<void> goto_array_menu(std::istream& is, std::ostream& os, Array<Resident>& records, bool& loaded);
+  Result<void> goto_list_menu(std::istream& is, std::ostream& os, List<Resident>& records, bool& loaded);
   Result<void> goto_creds(std::istream& is, std::ostream& os);
 
 
