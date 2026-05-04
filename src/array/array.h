@@ -1,6 +1,5 @@
 // Array.h
-#ifndef DSTR_ARRAY_H
-#define DSTR_ARRAY_H
+#pragma once
 
 #define DSTR_ARRAY_H_INCLUDED
 
@@ -107,4 +106,3 @@ namespace dstr {
 
 #include "array.inl"
 
-#endif // DSTR_ARRAY_H..
