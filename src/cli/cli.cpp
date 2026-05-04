@@ -415,7 +415,7 @@ namespace dstr {
     u64 us_insertion = static_cast<u64>(duration_cast<microseconds>(t3 - t2).count());
     u64 us_quick = static_cast<u64>(duration_cast<microseconds>(t5 - t4).count());
     auto s0 = high_resolution_clock::now(); state.arr_records.linear_search([&](const Resident& r) { return r.id == mid.id; }); auto s1 = high_resolution_clock::now();
-    auto s2 = high_resolution_clock::now(); copy_q.binary_search(comp_emission, key_emission, mid);                              auto s3 = high_resolution_clock::now();
+    auto s2 = high_resolution_clock::now(); copy_q.binary_search(comp_emission, key_emission, mid);                             auto s3 = high_resolution_clock::now();
     u64 us_linear = static_cast<u64>(duration_cast<microseconds>(s1 - s0).count());
     u64 us_binary = static_cast<u64>(duration_cast<microseconds>(s3 - s2).count());
     state.os << "+---------------------+----------------+" << NL;
