@@ -28,6 +28,11 @@ namespace dstr {
   template <typename T>
   using wp = std::weak_ptr<T>;
 
+  template <typename T>
+  constexpr T&& move(T& val) noexcept {
+      return static_cast<T&&>(val);
+  }
+
   using std::string;
 
   using std::chrono::steady_clock;
