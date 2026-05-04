@@ -1,9 +1,9 @@
 // list.inl
-// Included at the bottom of list.h — do not include directly.
+// Included at the bottom of list.h, do not include directly.
 
 namespace dstr {
 
-  // node
+  // Node
 
   template <typename T>
   List<T>::Node::Node(const T& value, i32 lvl)
@@ -13,18 +13,17 @@ namespace dstr {
   }
 
 
-  // lifecycle
+  // Lifecycle
 
   template <typename T>
   List<T>::List() : currentLevel_(0), size_(0) {
     std::srand(static_cast<unsigned>(std::time(nullptr)));
-    // Sentinel head: value-initialised T, all forward pointers null
     head_ = up<Node>(new Node(T{}, MAX_LEVEL));
   }
 
-  // The destructor must manually unlink nodes from the chain before up<Node>
-  // tries to recursively delete them (which would stack-overflow on large lists).
-  // We walk forward[0], release ownership one node at a time.
+  // Destructor walks forward[0] and deletes each node manually to avoid
+  // recursive deletion chaining through up<Node>, which would stack overflow
+  // on large lists.
   template <typename T>
   List<T>::~List() {
     Node* cur = head_->forward[0];
@@ -33,13 +32,69 @@ namespace dstr {
       delete cur;
       cur = next;
     }
-    // head_ is cleaned up by up<Node> automatically
-    // but we must null its forward[0] so it doesn't double-free
     head_->forward[0] = nullptr;
   }
 
 
-  // internal helpers
+  // Copy and move
+
+  // Deep copy: re-inserts every element into a fresh list.
+  // Insertion preserves sorted order so the skip structure rebuilds correctly.
+  template <typename T>
+  List<T>::List(const List& other) : currentLevel_(0), size_(0) {
+    head_ = up<Node>(new Node(T{}, MAX_LEVEL));
+    other.for_each([this](const T& val) { insert(val); });
+  }
+
+  template <typename T>
+  List<T>& List<T>::operator=(const List& other) {
+    if (this != &other) {
+      Node* cur = head_->forward[0];
+      while (cur) {
+        Node* next = cur->forward[0];
+        delete cur;
+        cur = next;
+      }
+      head_->forward[0] = nullptr;
+      currentLevel_ = 0;
+      size_ = 0;
+      other.for_each([this](const T& val) { insert(val); });
+    }
+    return *this;
+  }
+
+  // Move: steals the sentinel and metadata, leaves other in a valid empty state.
+  template <typename T>
+  List<T>::List(List&& other) noexcept
+    : head_(move(other.head_)),
+      currentLevel_(other.currentLevel_),
+      size_(other.size_) {
+    other.currentLevel_ = 0;
+    other.size_         = 0;
+    other.head_ = up<Node>(new Node(T{}, MAX_LEVEL));
+  }
+
+  template <typename T>
+  List<T>& List<T>::operator=(List&& other) noexcept {
+    if (this != &other) {
+      Node* cur = head_->forward[0];
+      while (cur) {
+        Node* next = cur->forward[0];
+        delete cur;
+        cur = next;
+      }
+      head_           = move(other.head_);
+      currentLevel_   = other.currentLevel_;
+      size_           = other.size_;
+      other.currentLevel_ = 0;
+      other.size_         = 0;
+      other.head_ = up<Node>(new Node(T{}, MAX_LEVEL));
+    }
+    return *this;
+  }
+
+
+  // Internal helpers
 
   template <typename T>
   i32 List<T>::randomLevel() {
@@ -61,7 +116,7 @@ namespace dstr {
   }
 
 
-  // public ops
+  // Public operations
 
   template <typename T>
   void List<T>::insert(const T& value) {
@@ -70,7 +125,7 @@ namespace dstr {
 
     Node* candidate = update[0]->forward[0];
     if (candidate && candidate->data == value)
-      return; // duplicate — skip
+      return; // duplicate, skip
 
     i32 newLevel = randomLevel();
     if (newLevel > currentLevel_) {
@@ -81,7 +136,7 @@ namespace dstr {
 
     Node* newNode = new Node(value, newLevel);
     for (i32 i = 0; i <= newLevel; ++i) {
-      newNode->forward[i]  = update[i]->forward[i];
+      newNode->forward[i]   = update[i]->forward[i];
       update[i]->forward[i] = newNode;
     }
     ++size_;
@@ -134,8 +189,6 @@ namespace dstr {
       if (update[i]->forward[i] != target) break;
       update[i]->forward[i] = target->forward[i];
     }
-    // Null out target's forward[0] before deleting so destructor doesn't
-    // follow the chain
     target->forward[0] = nullptr;
     delete target;
     --size_;
@@ -147,7 +200,7 @@ namespace dstr {
   }
 
   template <typename T>
-  void List<T>::sort() {}  // always sorted on insert
+  void List<T>::sort() {} // always sorted on insert
 
   template <typename T>
   bool List<T>::empty() const {
