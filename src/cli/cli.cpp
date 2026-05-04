@@ -46,7 +46,7 @@ namespace dstr {
   Result<void> cli_start(std::istream& is, std::ostream& os, char* argv, int argc) {
     bool running = true;
     while (running) {
-      os << strings::MSG_MAIN_MENU_INTRO << '\n';
+      print_header(os, string(strings::MSG_MAIN_MENU_INTRO));
       os << strings::MSG_MAIN_MENU_OPTIONS << '\n';
       auto option = get_option(is);
       if (!option) {
@@ -63,7 +63,7 @@ namespace dstr {
         break;
       }
       case 2: {
-        auto r = goto_array_menu(is, os);
+        auto r = goto_list_menu(is, os);
         if (r.error().code() == ErrorCode::TERMINATED) {
           running = false;
         }
@@ -170,7 +170,9 @@ namespace dstr {
     List<Resident> records;
     bool loaded = false;
     bool running = true;
+    bool wait_enter = true;
     while (running) {
+      wait_enter = true;
       print_header(os, string(strings::MSG_LIST_MENU_HEADER));
       os << strings::MSG_SUB_MENU_OPT_1 << NL;
       os << strings::MSG_SUB_MENU_OPT_2 << NL;
@@ -195,6 +197,7 @@ namespace dstr {
       switch (option.value()) {
       case 0:
         running = false;
+        wait_enter = false;
         break;
       case 1: {
         auto r = list_load_data(is, os, records);
@@ -249,20 +252,25 @@ namespace dstr {
         os << NL << strings::MSG_INVALID_OPTION << NL << NL;
         break;
       }
+      if (wait_enter) {
+        os << strings::MSG_CONTINUE;
+        await_return(is);
+      }
     }
     return Ok();
   }
 
 
   Result<void> goto_creds(std::istream& is, std::ostream& os) {
-    os << dstr::strings::MSG_DESC << NL;
-    os << dstr::strings::MSG_DESC_MEMBERS << NL;
-    os << dstr::strings::MSG_DESC_DOCS << NL;
-    os << dstr::strings::MSG_DESC_DOCS_FILES << NL;
-    os << dstr::strings::MSG_DESC_ROLES_1 << NL;
-    os << dstr::strings::MSG_DESC_ROLES_2 << NL;
-    os << dstr::strings::MSG_DESC_ROLES_3 << NL;
-    os << dstr::strings::MSG_DESC_ROLES_4 << NL;
+    os << strings::MSG_DESC << NL;
+    os << strings::MSG_DESC_MEMBERS << NL;
+    os << strings::MSG_DESC_DOCS << NL;
+    os << strings::MSG_DESC_DOCS_FILES << NL;
+    os << strings::MSG_DESC_ROLES_1 << NL;
+    os << strings::MSG_DESC_ROLES_2 << NL;
+    os << strings::MSG_DESC_ROLES_3 << NL;
+    os << strings::MSG_DESC_ROLES_4 << NL;
+    os << strings::MSG_CONTINUE;
     await_return(is);
     return Ok();
   }
