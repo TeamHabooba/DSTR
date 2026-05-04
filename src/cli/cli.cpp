@@ -13,8 +13,6 @@
 #include "../common/strings/list.h"
 
 
-using std::cout;
-using std::cin;
 using std::getline;
 using std::string;
 
@@ -26,10 +24,10 @@ namespace dstr {
 
   // Helpers
   
-  Result<int> get_option() {
+  Result<int> get_option(std::istream& is) {
     string soption;
     int option{ -1 };
-    getline(cin, soption);
+    getline(is, soption);
     auto trim_result = trim(soption);
     try {
       option = std::stoi(trim(soption));
@@ -45,12 +43,12 @@ namespace dstr {
 
 
   // Intro and main menu
-  Result<void> cli_start(std::ostream& os, char* argv, int argc) {
+  Result<void> cli_start(std::istream& is, std::ostream& os, char* argv, int argc) {
     bool running = true;
     while (running) {
       os << strings::MSG_MAIN_MENU_INTRO << '\n';
       os << strings::MSG_MAIN_MENU_OPTIONS << '\n';
-      auto option = get_option();
+      auto option = get_option(is);
       if (!option) {
         return Result(option);
       }
@@ -58,21 +56,21 @@ namespace dstr {
       case 0:
         return Err(ErrorCode::TERMINATED, string(strings::ERR_TERMINATED));
       case 1: {
-        auto r = goto_array_menu(os);
+        auto r = goto_array_menu(is, os);
         if (r.error().code() == ErrorCode::TERMINATED) {
           running = false;
         }
         break;
       }
       case 2: {
-        auto r = goto_array_menu(os);
+        auto r = goto_array_menu(is, os);
         if (r.error().code() == ErrorCode::TERMINATED) {
           running = false;
         }
         break;
       }
       case 3: {
-        goto_creds(os);
+        goto_creds(is, os);
         break;
       }
       }
@@ -81,7 +79,7 @@ namespace dstr {
   }
 
 
-  Result<void> goto_array_menu(std::ostream& os) {
+  Result<void> goto_array_menu(std::istream& is, std::ostream& os) {
     Array<Resident> records;
     bool loaded = false;
     bool running = true;
@@ -102,7 +100,7 @@ namespace dstr {
         os << strings::MSG_DATA_NOT_LOADED << NL;
       }
       os << NL << strings::MSG_OPTION;
-      auto option = get_option();
+      auto option = get_option(is);
       if (!option) {
         os << NL << "[!] " << option.error().message() << NL << NL;
         continue;
@@ -168,7 +166,7 @@ namespace dstr {
     return Ok();
   }
 
-  Result<void> goto_list_menu(std::ostream& os) {
+  Result<void> goto_list_menu(std::istream& is, std::ostream& os) {
     List<Resident> records;
     bool loaded = false;
     bool running = true;
@@ -189,7 +187,7 @@ namespace dstr {
         os << strings::MSG_DATA_NOT_LOADED << NL;
       }
       os << NL << strings::MSG_OPTION;
-      auto option = get_option();
+      auto option = get_option(is);
       if (!option) {
         os << NL << "[!] " << option.error().message() << NL << NL;
         continue;
@@ -199,7 +197,7 @@ namespace dstr {
         running = false;
         break;
       case 1: {
-        auto r = list_load_data(records);
+        auto r = list_load_data(is, os, records);
         if (r) {
           loaded = true;
         }
@@ -210,42 +208,42 @@ namespace dstr {
           os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
           break;
         }
-        list_display_table(records);
+        list_display_table(is, os, records);
         break;
       case 3:
         if (!loaded) {
           os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
           break;
         }
-        list_carbon_analysis(records);
+        list_carbon_analysis(is, os, records);
         break;
       case 4:
         if (!loaded) {
           os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
           break;
         }
-        list_age_group_analysis(records);
+        list_age_group_analysis(is, os, records);
         break;
       case 5:
         if (!loaded) {
           os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
           break;
         }
-        list_sort_menu(records);
+        list_sort_menu(is, os, records);
         break;
       case 6:
         if (!loaded) {
           os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
           break;
         }
-        list_search_menu(records);
+        list_search_menu(is, os, records);
         break;
       case 7:
         if (!loaded) {
           os << NL << strings::MSG_DATA_NOT_LOADED_X << NL << NL;
           break;
         }
-        list_performance_menu(records);
+        list_performance_menu(is, os, records);
         break;
       default:
         os << NL << strings::MSG_INVALID_OPTION << NL << NL;
@@ -256,7 +254,7 @@ namespace dstr {
   }
 
 
-  Result<void> goto_creds(std::ostream& os) {
+  Result<void> goto_creds(std::istream& is, std::ostream& os) {
     os << dstr::strings::MSG_DESC << NL;
     os << dstr::strings::MSG_DESC_MEMBERS << NL;
     os << dstr::strings::MSG_DESC_DOCS << NL;
@@ -265,6 +263,7 @@ namespace dstr {
     os << dstr::strings::MSG_DESC_ROLES_2 << NL;
     os << dstr::strings::MSG_DESC_ROLES_3 << NL;
     os << dstr::strings::MSG_DESC_ROLES_4 << NL;
+    await_return(is);
     return Ok();
   }
 
@@ -299,9 +298,8 @@ namespace dstr {
 
   // List menu functions
 
-  // 1. Load data
-
-  Result<void> dstr::list_load_data(std::ostream& os, List<Resident>& records) {
+  // Load data
+  Result<void> dstr::list_load_data(std::istream& is, std::ostream& os, List<Resident>& records) {
       os << NL << strings::LIST_LOAD_LOADING << NL;
       int loaded = 0;
       for (auto path : { strings::PATH_CITY_A, strings::PATH_CITY_B, strings::PATH_CITY_C }) {
@@ -321,17 +319,13 @@ namespace dstr {
       }
       os << strings::LIST_LOAD_OK_BEG << loaded << strings::LIST_LOAD_OK_END << NL << NL;
       os << strings::MSG_CONTINUE;
-      std::cin.ignore();
       return Ok();
   }
 
-
-  //  2. Display table
-
-  Result<void> dstr::list_display_table(const List<Resident>& records) {
-      std::cout << NL << strings::LIST_TABLE_HEADER << NL;
-      std::cout << strings::LIST_TABLE_DIVIDER << NL;
-
+  //  Display table
+  Result<void> dstr::list_display_table(std::istream& is, std::ostream& os, const List<Resident>& records) {
+      os << NL << strings::LIST_TABLE_HEADER << NL;
+      os << strings::LIST_TABLE_DIVIDER << NL;
       if (records.empty()) {
           std::cout << strings::LIST_TABLE_EMPTY << NL;
       }
@@ -341,17 +335,17 @@ namespace dstr {
               std::cout << "[" << std::setw(4) << idx++ << "] " << r << NL;
               });
       }
-
-      std::cout << strings::LIST_TABLE_DIVIDER << NL << NL;
-      std::cout << strings::MSG_RETURN;
-      std::cin.ignore();
+      os << strings::LIST_TABLE_DIVIDER << NL << NL;
+      os << strings::MSG_RETURN;
+      
+      await_return(std::cin);
       return Ok();
   }
 
 
   //  3. Carbon emission analysis
 
-  Result<void> dstr::list_carbon_analysis(const List<Resident>& records) {
+  Result<void> dstr::list_carbon_analysis(std::istream& is, std::ostream& os, const List<Resident>& records) {
       std::cout << NL << strings::LIST_CARBON_HEADER << NL << NL;
 
       // Accumulate per transport mode
@@ -427,7 +421,7 @@ namespace dstr {
 
   //  4. Age group analysis 
 
-  Result<void> dstr::list_age_group_analysis(const List<Resident>& records) {
+  Result<void> dstr::list_age_group_analysis(std::istream& is, std::ostream& os, const List<Resident>& records) {
       std::cout << NL << strings::LIST_AGE_HEADER << NL << NL;
 
       std::map<AgeGroup, float> sum_by_group;
@@ -468,144 +462,126 @@ namespace dstr {
   }
 
 
-  //  5. Sort experiments 
-
-  Result<void> dstr::list_sort_menu(List<Resident>& records) {
-      std::cout << NL << strings::LIST_SORT_HEADER << NL;
-      std::cout << strings::LIST_SORT_PROMPT << NL << NL;
-
-      // The skip list is always sorted on insert — we just time a full traversal
-      // to demonstrate the O(log n) structure is intact
-      auto t0 = high_resolution_clock::now();
-      records.sort();  // no-op, but we also do a full traversal to verify order
-      volatile int count = 0;
-      records.for_each([&](const Resident&) { ++count; });
-      auto t1 = high_resolution_clock::now();
-
-      long long us = duration_cast<microseconds>(t1 - t0).count();
-      std::cout << strings::LIST_SORT_DONE_BEG << us
-          << strings::LIST_SORT_DONE_END << NL << NL;
-
-      // Print the sorted result
-      std::cout << "+--------------------+----------------+\n";
-      std::cout << "| Sort Method        | Time (us)      |\n";
-      std::cout << "+--------------------+----------------+\n";
-      std::cout << "| Skip List (insert) | "
-          << std::setw(14) << us << " |\n";
-      std::cout << "+--------------------+----------------+\n";
-      std::cout << "  Elements: " << records.size() << NL << NL;
-
-      std::cout << strings::MSG_RETURN;
-      std::cin.ignore();
-      return Ok();
+  //  Sort experiments 
+  Result<void> dstr::list_sort_menu(std::istream& is, std::ostream& os, List<Resident>& records) {
+    using namespace std::chrono;
+    os << NL << strings::LIST_SORT_HEADER << NL;
+    os << strings::LIST_SORT_PROMPT << NL << NL;
+    // The skip list is always sorted on insert — we just time a full traversal
+    // to demonstrate the O(log n) structure is intact
+    auto t0 = high_resolution_clock::now();
+    records.sort();  // no-op, but we also do a full traversal to verify order
+    volatile int count = 0;
+    records.for_each([&](const Resident&) { ++count; });
+    auto t1 = high_resolution_clock::now();
+    long long us = duration_cast<microseconds>(t1 - t0).count();
+    os << strings::LIST_SORT_DONE_BEG << us;
+    os << strings::LIST_SORT_DONE_END << NL << NL;
+    // Print the sorted result
+    os << "+--------------------+----------------+\n";
+    os << "| Sort Method        | Time (us)      |\n";
+    os << "+--------------------+----------------+\n";
+    os << "| Skip List (insert) | ";
+    os << std::setw(14) << us << " |\n";
+    os << "+--------------------+----------------+\n";
+    os << "  Elements: " << records.size() << NL << NL;
+    os << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
   }
 
-
-  //  6. Search experiments 
-
-  Result<void> dstr::list_search_menu(const List<Resident>& records) {
-      std::cout << NL << strings::LIST_SEARCH_HEADER << NL;
-      std::cout << strings::LIST_SEARCH_PROMPT;
-
-      string target_id;
-      std::getline(std::cin, target_id);
-      target_id = trim(target_id);
-
-      // Build a dummy Resident to search by ID (operator== compares id only)
-      Resident target{};
-      target.id = target_id;
-      // skip list orders by monthly_emission via operator<,
-      // so set emission fields to 0 — find() uses == (id match) at candidate node
-      target.daily_distance_km = 0;
-      target.carbon_emission_factor = 0.0f;
-      target.avg_days_per_month = 0;
-
-      auto t0 = high_resolution_clock::now();
-      const Resident* result = records.find(target);
-      auto t1 = high_resolution_clock::now();
-
-      long long us = duration_cast<microseconds>(t1 - t0).count();
-
-      std::cout << NL;
-      if (result) {
-          std::cout << strings::LIST_SEARCH_FOUND << *result << NL;
+  // Search experiments 
+  Result<void> dstr::list_search_menu(std::istream& is, std::ostream& os, const List<Resident>& records) {
+    using namespace std::chrono;
+    os << NL << strings::LIST_SEARCH_HEADER << NL;
+    os << strings::LIST_SEARCH_PROMPT;
+    string target_id;
+    std::getline(is, target_id);
+    target_id = trim(target_id);
+    // Build a dummy Resident to search by ID (operator== compares id only)
+    Resident target{};
+    target.id = target_id;
+    // skip list orders by monthly_emission via operator<,
+    // so set emission fields to 0 — find() uses == (id match) at candidate node
+    target.daily_distance_km = 0;
+    target.carbon_emission_factor = 0.0f;
+    target.avg_days_per_month = 0;
+    auto t0 = high_resolution_clock::now();
+    const Resident* result = records.find(target);
+    auto t1 = high_resolution_clock::now();
+    long long us = duration_cast<microseconds>(t1 - t0).count();
+    os << NL;
+    if (result) {
+      os << strings::LIST_SEARCH_FOUND << *result << NL;
+    }
+    else {
+      // Skip list is sorted by emission, not ID — fall back to linear scan
+      // so the user still gets a result for ID-based lookup
+      const Resident* found = nullptr;
+      records.for_each([&](const Resident& r) {
+        if (!found && r.id == target_id) found = &r;
+      });
+      if (found) {
+        std::cout << strings::LIST_SEARCH_FOUND << *found << NL;
       }
       else {
-          // Skip list is sorted by emission, not ID — fall back to linear scan
-          // so the user still gets a result for ID-based lookup
-          const Resident* found = nullptr;
-          records.for_each([&](const Resident& r) {
-              if (!found && r.id == target_id) found = &r;
-              });
-          if (found)
-              std::cout << strings::LIST_SEARCH_FOUND << *found << NL;
-          else
-              std::cout << strings::LIST_SEARCH_NOT_FOUND << NL;
+        std::cout << strings::LIST_SEARCH_NOT_FOUND << NL;
       }
-
-      std::cout << strings::LIST_SEARCH_TIME_BEG << us
-          << strings::LIST_SEARCH_TIME_END << NL << NL;
-
-      std::cout << strings::MSG_RETURN;
-      std::cin.ignore();
-      return Ok();
+    }
+    os << strings::LIST_SEARCH_TIME_BEG << us;
+    os << strings::LIST_SEARCH_TIME_END << NL << NL;
+    os << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
   }
 
-
-  //  7. Performance analysis 
-
-  Result<void> dstr::list_performance_menu(List<Resident>& records) {
-      std::cout << NL << strings::LIST_PERF_HEADER << NL << NL;
-
-      //  Insert benchmark: rebuild list from scratch and time it
-      std::vector<Resident> snapshot;
-      snapshot.reserve(records.size());
-      records.for_each([&](const Resident& r) { snapshot.push_back(r); });
-
-      List<Resident> bench_list;
-      auto t0 = high_resolution_clock::now();
-      for (const auto& r : snapshot)
-          bench_list.insert(r);
-      auto t1 = high_resolution_clock::now();
-      long long t_insert = duration_cast<microseconds>(t1 - t0).count();
-
-      //  Search benchmark: search for the middle element by emission order
-      long long t_search = 0;
-      if (!snapshot.empty()) {
-          // snapshot is unsorted; pick one that exists in the list
-          const Resident& mid = snapshot[snapshot.size() / 2];
-          auto s0 = high_resolution_clock::now();
-          bench_list.find(mid);
-          auto s1 = high_resolution_clock::now();
-          t_search = duration_cast<microseconds>(s1 - s0).count();
-      }
-
-      //  Traversal benchmark
-      auto v0 = high_resolution_clock::now();
-      volatile int dummy = 0;
-      records.for_each([&](const Resident&) { ++dummy; });
-      auto v1 = high_resolution_clock::now();
-      long long t_traverse = duration_cast<microseconds>(v1 - v0).count();
-
-      //  Memory estimate: per node ~ sizeof(T) + sizeof(vector header) + avg 2 pointers per node
-      // avg levels ≈ 2 for p=0.5, so ~2 forward pointers per node
-      size_t node_size = sizeof(Resident)
-          + sizeof(std::vector<void*>)    // forward vector header
-          + 2 * sizeof(void*);            // avg forward pointers
-      size_t mem_est = node_size * static_cast<size_t>(records.size())
-          + sizeof(List<Resident>);
-
-      //  Print results
-      std::cout << strings::LIST_PERF_COUNT_BEG << records.size() << NL;
-      std::cout << strings::LIST_PERF_INSERT_BEG << t_insert << strings::LIST_PERF_INSERT_END << NL;
-      std::cout << strings::LIST_PERF_SEARCH_BEG << t_search << strings::LIST_PERF_SEARCH_END << NL;
-      std::cout << strings::LIST_PERF_TRAVERSE_BEG << t_traverse << strings::LIST_PERF_TRAVERSE_END << NL;
-      std::cout << strings::LIST_PERF_MEM_BEG << mem_est << strings::LIST_PERF_MEM_END << NL;
-
-      std::cout << NL << strings::MSG_RETURN;
-      std::cin.ignore();
-      return Ok();
-  }
+  // Performance analysis 
+  Result<void> dstr::list_performance_menu(std::istream& is, std::ostream& os, List<Resident>& records) {
+    using namespace std::chrono;
+    os << NL << strings::LIST_PERF_HEADER << NL << NL;
+    //  Insert benchmark: rebuild list from scratch and time it
+    std::vector<Resident> snapshot;
+    snapshot.reserve(records.size());
+    records.for_each([&](const Resident& r) { snapshot.push_back(r); });
+    List<Resident> bench_list;
+    auto t0 = high_resolution_clock::now();
+    for (const auto& r : snapshot) {
+      bench_list.insert(r);
+    }
+    auto t1 = high_resolution_clock::now();
+    long long t_insert = duration_cast<microseconds>(t1 - t0).count();
+    //  Search benchmark: search for the middle element by emission order
+    long long t_search = 0;
+    if (!snapshot.empty()) {
+        // snapshot is unsorted; pick one that exists in the list
+        const Resident& mid = snapshot[snapshot.size() / 2];
+        auto s0 = high_resolution_clock::now();
+        bench_list.find(mid);
+        auto s1 = high_resolution_clock::now();
+        t_search = duration_cast<microseconds>(s1 - s0).count();
+    }
+    //  Traversal benchmark
+    auto v0 = high_resolution_clock::now();
+    volatile int dummy = 0;
+    records.for_each([&](const Resident&) { ++dummy; });
+    auto v1 = high_resolution_clock::now();
+    long long t_traverse = duration_cast<microseconds>(v1 - v0).count();
+    //  Memory estimate: per node ~ sizeof(T) + sizeof(vector header) + avg 2 pointers per node
+    // avg levels ≈ 2 for p=0.5, so ~2 forward pointers per node
+    size_t node_size = sizeof(Resident)
+        + sizeof(std::vector<void*>)    // forward vector header
+        + 2 * sizeof(void*);            // avg forward pointers
+    size_t mem_est = node_size * static_cast<size_t>(records.size()) + sizeof(List<Resident>);
+    //  Print results
+    os << strings::LIST_PERF_COUNT_BEG << records.size() << NL;
+    os << strings::LIST_PERF_INSERT_BEG << t_insert << strings::LIST_PERF_INSERT_END << NL;
+    os << strings::LIST_PERF_SEARCH_BEG << t_search << strings::LIST_PERF_SEARCH_END << NL;
+    os << strings::LIST_PERF_TRAVERSE_BEG << t_traverse << strings::LIST_PERF_TRAVERSE_END << NL;
+    os << strings::LIST_PERF_MEM_BEG << mem_est << strings::LIST_PERF_MEM_END << NL;
+    os << NL << strings::MSG_RETURN;
+    await_return(is);
+    return Ok();
+}
 
   
 } // namespace dstr

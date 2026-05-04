@@ -30,13 +30,13 @@ namespace dstr {
 
   // Helpers
 
-  static string trim(const string& s) {
+  inline string trim(const string& s) {
     auto start = std::find_if_not(s.begin(), s.end(), ::isspace);
     auto end = std::find_if_not(s.rbegin(), s.rend(), ::isspace).base();
     return (start < end) ? string(start, end) : "";
   }
 
-  static string pad_right(const string& s, const int width) {
+  inline string pad_right(const string& s, const int width) {
     int size = static_cast<int>(s.size());
     if (size >= width) {
       return s.substr(0, width);
@@ -44,7 +44,7 @@ namespace dstr {
     return s + string(width - size, ' ');
   }
 
-  static string pad_left(const string& s, const int width) {
+  inline string pad_left(const string& s, const int width) {
     int size = static_cast<int>(s.size());
     if (size >= width) {
       return s.substr(0, width);
@@ -52,17 +52,17 @@ namespace dstr {
     return string(width - size, ' ') + s;
   }
 
-  static  string format_float(const float value, const int precision) {
+  inline string format_float(const float value, const int precision) {
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(precision) << value;
     return oss.str();
   }
 
-  static void print_separator(std::ostream& os, const char c, const int width) {
+  inline void print_separator(std::ostream& os, const char c, const int width) {
     os << string(width, c) << '\n';
   }
 
-  static void print_header(std::ostream& os, const string& title) {
+  inline void print_header(std::ostream& os, const string& title) {
     print_separator(os, '=', TABLE_WIDTH);
     int padding = (TABLE_WIDTH - static_cast<int>(title.size())) / 2;
     if (padding > 0) {
@@ -72,8 +72,13 @@ namespace dstr {
     print_separator(os, '=', TABLE_WIDTH);
   }
 
+  inline void await_return(std::istream& is) {
+    string dummy;
+    getline(is, dummy);
+  }
 
-  static City parse_city_from_id(const string& resident_id) {
+
+  inline City parse_city_from_id(const string& resident_id) {
     if (resident_id.empty()) { return City::UNKNOWN; }
     char letter = static_cast<char>(std::toupper(static_cast<unsigned char>(resident_id[0])));
     if (letter == 'A') { return City::CITY_A; }
@@ -82,7 +87,7 @@ namespace dstr {
     return City::UNKNOWN;
   }
 
-  static ModeOfTransport parse_transport(const string& s) {
+  inline ModeOfTransport parse_transport(const string& s) {
     string cleaned;
     cleaned.reserve(s.size());
     for (char c : s) {
@@ -117,7 +122,7 @@ namespace dstr {
     //return Err<ModeOfTransport>(ErrorCode::INVALID_ARGUMENT, "Unknown transport mode: '" + s + "'");
   }
 
-  static string transport_name(ModeOfTransport t) {
+  inline string transport_name(ModeOfTransport t) {
     switch (t) {
     case ModeOfTransport::CAR:        return "Car";
     case ModeOfTransport::BUS:        return "Bus";
@@ -129,7 +134,7 @@ namespace dstr {
     }
   }
 
-  static string city_name(City c) {
+  inline string city_name(City c) {
     switch (c) {
     case City::CITY_A: return "City A (Metropolitan)";
     case City::CITY_B: return "City B (University Town)";
@@ -138,7 +143,7 @@ namespace dstr {
     }
   }
 
-  static string age_group_name(AgeGroup g) {
+  inline string age_group_name(AgeGroup g) {
     switch (g) {
     case AgeGroup::CHILDREN_TEENAGERS:   return "Children & Teenagers (6-17)";
     case AgeGroup::YOUNG_ADULTS:         return "Young Adults (18-25)";
@@ -150,7 +155,7 @@ namespace dstr {
   }
 
 
-  static void print_residents_table_header(std::ostream& os) {
+  inline void print_residents_table_header(std::ostream& os) {
     print_separator(os, '-', TABLE_WIDTH);
     os << "| "
       << pad_right("#", COL_IDX)
@@ -166,7 +171,7 @@ namespace dstr {
     print_separator(os, '-', TABLE_WIDTH);
   }
 
-  static void print_resident_row(std::ostream& os, const Resident& r, i32 index)
+  inline void print_resident_row(std::ostream& os, const Resident& r, i32 index)
   {
     string city_short;
     switch (r.city) {
